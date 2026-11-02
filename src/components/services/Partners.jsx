@@ -5,129 +5,93 @@ import styles from "./Partners.module.css";
 import { useTranslation } from "react-i18next";
 
 import logo03 from "../../../assets/svg/3.svg";
-import logo04 from "../../../assets/svg/4.svg";
-import logo05 from "../../../assets/svg/5.svg";
-import logo06 from "../../../assets/svg/6.svg";
 import logo07 from "../../../assets/svg/7.svg";
 import logo08 from "../../../assets/svg/8.svg";
-import logo10 from "../../../assets/svg/10.svg";
-import logo11 from "../../../assets/svg/11.jpg";
 import logo12 from "../../../assets/svg/12.svg";
-import logo14 from "../../../assets/svg/14.jpg";
 import logo15 from "../../../assets/svg/15.jpg";
-import logo16 from "../../../assets/svg/16.svg";
 import logo17 from "../../../assets/svg/17.svg";
-import logo19 from "../../../assets/svg/19.svg";
 import Customers1 from "../../../assets/png/Customers1.jpg";
 import Customers2 from "../../../assets/png/Customers2.jpg";
-import Customers3 from "../../../assets/png/Customers3.jpg";
 import Customers4 from "../../../assets/png/Customers4.jpg";
 import Customers6 from "../../../assets/png/Customers6.jpg";
 import Customers7 from "../../../assets/png/Customers7.jpg";
 import Customers10 from "../../../assets/png/Customers10.jpg";
-import Customers11 from "../../../assets/png/Customers11.jpg";
 import Customers12 from "../../../assets/png/Customers12.jpg";
 import Customers13 from "../../../assets/png/Customers13.png";
-import Customers14 from "../../../assets/png/Customers14.jpg";
 import Customers15 from "../../../assets/png/Customers15.jpg";
 import Customers16 from "../../../assets/png/Customers16.jpg";
-import Customers17 from "../../../assets/png/Customers17.png";
 import Customers18 from "../../../assets/png/Customers18.jpg";
-import Customers19 from "../../../assets/png/Customers19.png";
 import Customers20 from "../../../assets/png/Customers20.jpg";
-import Customers21 from "../../../assets/png/Customers21.png";
 import Customers22 from "../../../assets/png/Customers22.jpg";
-import Customers23 from "../../../assets/png/Customers23.png";
 import Customers24 from "../../../assets/png/Customers24.jpg";
-import Customers25 from "../../../assets/png/Customers25.webp";
+import Customers33 from "../../../assets/png/Customers33.png";
 import Customers26 from "../../../assets/png/Customers26.png";
+import Customers5 from "../../../assets/png/Customers5.jpg";
+import Customers27 from "../../../assets/png/Customers27.jpg";
+import Customers28 from "../../../assets/png/Customers28.png";
+import Customers29 from "../../../assets/png/Customers29.jpg";
+import Customers30 from "../../../assets/png/Customers30.jpg";
+import Customers31 from "../../../assets/png/Customers31.jpg";
+import Customers32 from "../../../assets/png/Customers32.jpg";
 
-const CUSTOMER_LOGO_SCALE = 1;
 
+// Окончательный список заказчиков и партнёров (29 шт.)
+// У кого нет src — показывается только текст. Чтобы добавить логотип,
+// импортируйте файл и пропишите src (и при необходимости scale).
 const DEFAULT_PARTNERS = [
-  // ---- Партнёры с логотипами ----
-  { src: logo03, name: "ЭЛ АРАЛЫК кувейт университети", scale: 2.1 },
-  { src: logo04, name: "Детский сад ЛУНТИК", scale: 2.0 },
-  { src: logo05, name: "Металлопрокатный завод им. Фрунзе", scale: 1.8 },
-  { src: logo06, name: "MAGNAT FITNESS", scale: 2.1 },
-  { src: logo07, name: "LOGA роботов", scale: 2.3 },
-  { src: logo08, name: "OLOLO creative hubs", scale: 3.3 },
-  { src: logo10, name: "UNITED WORLD INTERNATIONAL SCHOOL", scale: 2.7 },
-  { src: logo11, name: "ГАЗПРОМ школа свабодный", scale: 1.2 },
-  { src: logo12, name: "БШЗ Бишкекский штамповочный завод", scale: 3.5 },
-  { src: logo14, name: "NOVA Билим беруу мекемеси", scale: 1.4 },
-  { src: logo15, name: "Международный аэропорт «Манас»" },
-  { src: logo16, name: "MD Центр косметологии и оброзавания", scale: 2.5 },
-  { src: logo17, name: "Dasmia", scale: 1.9 },
-  { src: logo19, name: "Impulse", scale: 2.3 },
-
-  // ---- Заказчики ----
-  {
-    src: Customers4,
-    scale: CUSTOMER_LOGO_SCALE,
-    name: "БМ Групп",
-    kind: "Офис",
-  },
-  {
-    src: Customers3,
-    scale: CUSTOMER_LOGO_SCALE,
-    name: "Бишкек Арена Фитнес",
-    kind: "Спорт",
-  },
+  { src: Customers4, name: "БМ Групп", kind: "Офис" },
+  { src: Customers31, name: "Кумтор", kind: "Горнодобыча" },
   {
     src: Customers6,
-    scale: CUSTOMER_LOGO_SCALE,
     name: "Президентский лицей «Акылман»",
     kind: "Образование",
   },
   { src: Customers12, name: "ЖК «Сандык»", kind: "Жилой комплекс" },
   { src: Customers13, name: "ЖК «Чырак»", kind: "Жилой комплекс" },
-  { src: Customers25, name: "Бетонный завод", kind: "Балыкчы" },
+  { src: Customers33, name: "Грин Сити", kind: "Балыкчы", scale: 2.4 },
   { src: Customers26, name: "Мечеть Сарахси", kind: "Религиозный объект" },
-  { src: Customers14, name: "Хостел «Тамга»", kind: "Гостиница" },
-  { src: Customers15, name: "Пансионат «Кооператор»", kind: "Отдых", scale: 1.2 },
-  { src: Customers16, name: "Пансионат «Alpha White»", kind: "Иссык-Куль" },
-  { src: Customers17, name: "Adal Resort", kind: "Курорт" },
-  { name: "Uzbek Resort", kind: "Курорт" },
-  { src: Customers19, name: "Ala-Too Resort", kind: "Курорт", scale: 1.8 },
-  { src: logo12, name: "БШЗ Бишкекский штамповочный завод", kind: "Производство", scale: 3.5 },
-  { src: Customers13, name: "ЖК «Елисейские поля»", kind: "Жилой комплекс" },
-  { src: Customers18, name: "Школа MIT-2", kind: "Образование" },
+  { src: Customers27, name: "Олд Бишкек", kind: "Бишкек", scale: 1.4 },
   {
-    src: Customers2,
-    scale: CUSTOMER_LOGO_SCALE,
-    name: "Дом Правительства",
-    kind: "Госучреждение",
+    src: Customers15,
+    name: "Пансионат «Кооператор»",
+    kind: "Отдых",
     scale: 1.2,
   },
+  { src: Customers16, name: "Пансионат «Alpha White»", kind: "Иссык-Куль" },
+  { src: Customers5, name: "Кадастр", kind: "Госучреждение" },
+  { src: Customers2, name: "Маариф", kind: "Образование", scale: 1.7 },
+  { src: Customers28, name: "Университет «Ала-Тоо»", kind: "Образование" },
+  {
+    src: logo12,
+    name: "Бишкекский штамповочный завод",
+    kind: "Производство",
+    scale: 3.5,
+  },
+  { src: Customers29, name: "Университет им. Арабаева", kind: "Образование", scale: 1.3 },
+  { src: Customers18, name: "Школа MIT", kind: "Образование" },
+  { src: logo08, name: "Ололо Юрт", kind: "Отдых", scale: 3.3 },
   { src: Customers20, name: "КЭМП Ала-Тоо", kind: "Отдых", scale: 1.1 },
   { src: logo15, name: "Международный аэропорт «Манас»", kind: "Аэропорт" },
-  { src: Customers21, name: "Аэропорт Джалал-Абад", kind: "Аэропорт" },
+  { src: logo17, name: "Фитнес-центр «Дасмия»", kind: "Спорт", scale: 1.9 },
   {
     src: Customers10,
-    scale: CUSTOMER_LOGO_SCALE,
     name: "Международный аэропорт «Ош»",
     kind: "Аэропорт",
     scale: 1.4,
   },
-  { src: Customers22, name: "Фитнес-клуб «Импульс-1»", kind: "Спорт" },
-  { src: Customers22, name: "Фитнес-клуб «Импульс-2»", kind: "Спорт" },
-  { src: Customers23, name: "Вилла «Салкын-Тор»", kind: "Частный объект" },
-  { src: Customers25, name: "Аттракцион", kind: "Балыкчы" },
-  { src: Customers24, name: "Колледж «Интеллект»", kind: "Образование" },
+  { src: Customers22, name: "Фитнес-клуб «Импульс»", kind: "Спорт" },
   {
-    src: Customers11,
-    scale: CUSTOMER_LOGO_SCALE,
-    name: "Генпрокуратура",
-    kind: "Госучреждение",
-  },
-  {
-    src: Customers1,
-    scale: CUSTOMER_LOGO_SCALE,
-    name: "Школа им. Ломоносова",
+    src: logo03,
+    name: "Эл аралык Кувейт университети",
     kind: "Образование",
+    scale: 2.1,
   },
-  { src: Customers7, scale: CUSTOMER_LOGO_SCALE, name: "МИД", kind: "Бишкек" },
+  { src: logo07, name: "Лего роботов", kind: "Образование", scale: 2.3 },
+  { src: Customers30, name: "Кембридж школа", kind: "Образование" },
+  { src: Customers24, name: "Колледж «Интеллект»", kind: "Образование" },
+  { src: Customers32, name: "Ала-Тоо Девелопмент", kind: "Строительство" },
+  { src: Customers1, name: "Школа им. Ломоносова", kind: "Образование" },
+  { src: Customers7, name: "МИД", kind: "Бишкек" },
 ];
 
 const ROWS = 3;
@@ -245,7 +209,7 @@ export default function Partners({ partners = DEFAULT_PARTNERS }) {
                     <PartnerItem
                       key={`${copy}-${i}`}
                       partner={partner}
-                      hidden={copy === 1 || i >= partners.length}
+                      hidden={copy === 1}
                     />
                   )),
                 )}
