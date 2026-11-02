@@ -1,9 +1,13 @@
 .news-slider {
   position: relative;
-  
+
   .swiper-slide {
     padding: 10px 0px;
     height: auto;
+  }
+  .swiper-slide .relative.overflow-hidden {
+    isolation: isolate;
+    transform: translateZ(0);
   }
 
   .news__nav {

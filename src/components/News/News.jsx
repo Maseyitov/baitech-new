@@ -5,6 +5,7 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "./style.scss";
 import { useBanner } from "@/lib/news/hooks/hooks";
+import { getNewsImages } from "@/lib/news/utils/getNewsImages";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -92,14 +93,8 @@ export function News() {
               swiper.params.navigation.nextEl = nextRef.current;
             }}
             breakpoints={{
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 20,
-              },
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 20 },
             }}
           >
             {isLoading
@@ -109,9 +104,10 @@ export function News() {
                   </SwiperSlide>
                 ))
               : newsItems.map((item) => {
-                  const imageUrl = item.existing_images?.[0]?.image;
+                  const { main: imageUrl } = getNewsImages(item); // только 1-е фото
                   const title = item.title || "Без названия";
-                  const description = item.description || "Описание отсутствует";
+                  const description =
+                    item.description || "Описание отсутствует";
 
                   return (
                     <SwiperSlide key={item.id}>
@@ -122,13 +118,25 @@ export function News() {
                       >
                         <div className="h-[250px] lg:h-[320px] w-full bg-[#bfbfbf] rounded-[10px] shrink-0 overflow-hidden relative">
                           {imageUrl ? (
-                            <Image
-                              src={imageUrl}
-                              alt={title}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            />
+                            <>
+                              {/* размытый фон из этого же фото */}
+                              <Image
+                                src={imageUrl}
+                                alt=""
+                                aria-hidden
+                                fill
+                                className="object-cover blur-xl scale-110 opacity-60"
+                                sizes="33vw"
+                              />
+                              {/* само фото целиком, без обрезки */}
+                              <Image
+                                src={imageUrl}
+                                alt={title}
+                                fill
+                                className="object-contain"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              />
+                            </>
                           ) : (
                             <div className="w-full h-full bg-gradient-to-tr from-gray-300 to-gray-200 rounded-[10px] flex items-center justify-center">
                               <span className="text-gray-400 text-sm">

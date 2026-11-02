@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, Truck, Image as ImageIcon, Users, Settings, LogOut } from "lucide-react";
+import { Package, Truck, Image as ImageIcon, Users, Settings, LogOut, BarChart3 } from "lucide-react";
 import { useLogout } from "@/lib/auth/hooks/hooks";
 import "./AdminPanel.scss";
 
@@ -42,6 +42,13 @@ const menuItems = [
     path: "/setting-web",
     matchPaths: ["/setting-web"],
     icon: <Settings size={22} />,
+  },
+    {
+    id: 5,
+    text: "Статистика",
+    path: "/stats",
+    matchPaths: ["/stats"],
+    icon: <BarChart3 size={22} />,
   },
 ];
 

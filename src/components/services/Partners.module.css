@@ -133,7 +133,7 @@
   flex-shrink: 0;
   overflow: hidden; /* обрезает лишние поля при scale > 1 */
   background: #fff;
-  border: 1px solid #eceef0;
+  /* border: 1px solid #eceef0; */
   border-radius: 50%;
 }
 
