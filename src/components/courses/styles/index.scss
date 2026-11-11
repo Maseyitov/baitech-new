@@ -1,0 +1,30 @@
+/* Стили страницы курса */
+/* Страница курса «Специалист по видеонаблюдению».
+   Перенесено 1:1 из HTML-макета. Все стили ограничены классом .bt-course,
+   имена анимаций начинаются с bt-, чтобы не пересекаться с остальным сайтом.
+   Вместо html.anim используется @media (prefers-reduced-motion) — это та же проверка,
+   что делал скрипт в <head> макета, но без мигания при загрузке. */
+
+@use "base";
+@use "header";
+@use "hero";
+@use "stats";
+@use "install";
+@use "system";
+@use "plan";
+@use "program";
+@use "path";
+@use "format";
+@use "reviews";
+@use "faq";
+@use "theme";
+@use "keyframes";
+
+html:has(.bt-course) {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.bt-course) {
+    scroll-behavior: auto;
+  }
+}

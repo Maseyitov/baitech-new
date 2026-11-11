@@ -1,0 +1,302 @@
+// Цвета взяты из вашего каталога (#005bff), чтобы поиск выглядел частью сайта
+$accent: #005bff;
+$accent-soft: #f0f5ff;
+$text: #1f2328;
+$muted: #6b7280;
+$line: #eceef2;
+
+.root {
+  position: relative;
+}
+
+// ── Кнопка очистки поля ──
+// Если крестик встаёт не на место, поменяйте right под ширину вашей кнопки поиска
+.clear {
+  position: absolute;
+  top: 50%;
+  right: 52px;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $muted;
+  font-size: 18px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f2f3f5;
+    color: $text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: 1px;
+  }
+}
+
+// ── Выпадающее окно ──
+// Положение (top/left/width) берётся из вашего .header__search-dropdown
+.dropdown {
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px 0;
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(17, 24, 39, 0.12);
+  text-align: left;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: dropdownIn 0.12s ease-out;
+  }
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.section + .section {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid $line;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: $muted;
+}
+
+.clearHistory {
+  padding: 2px 4px;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: $accent;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// ── Строка ──
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  padding: 6px 16px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: $text;
+  cursor: pointer;
+}
+
+.itemActive {
+  background: $accent-soft;
+}
+
+.icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  color: $muted;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.hint {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: $muted;
+}
+
+.remove {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: $muted;
+  cursor: pointer;
+  opacity: 0;
+
+  .item:hover &,
+  .itemActive &,
+  &:focus-visible {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: $text;
+  }
+
+  // На телефонах нет наведения — крестик виден всегда
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+// ── Товар ──
+.thumb {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid $line;
+  border-radius: 8px;
+  background: #fff;
+  color: #c5cad3;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.productBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.productName {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.productMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+  font-size: 12px;
+  color: $muted;
+}
+
+.unavailable {
+  color: #b42318;
+}
+
+.price {
+  flex-shrink: 0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// Найденные слова — жирным, как в Google, без жёлтого фона
+.mark {
+  background: none;
+  color: inherit;
+  font-weight: 600;
+}
+
+.allResults {
+  justify-content: center;
+  font-weight: 500;
+  color: $accent;
+}
+
+// ── Исправление запроса ──
+.correction {
+  padding: 8px 16px 10px;
+  font-size: 13px;
+  color: $muted;
+  border-bottom: 1px solid $line;
+}
+
+.correctionLink {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: $accent;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ── Состояния ──
+.status {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: $muted;
+}
+
+.empty {
+  padding: 16px;
+}
+
+.emptyTitle {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text;
+}
+
+.emptyText {
+  margin: 0;
+  font-size: 13px;
+  color: $muted;
+}
+
+@media (max-width: 600px) {
+  .item {
+    padding: 8px 12px;
+  }
+
+  .price {
+    font-size: 13px;
+  }
+}

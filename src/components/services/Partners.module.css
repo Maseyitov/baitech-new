@@ -7,22 +7,22 @@
   --bg: #ffffff;
 
   /* Десктоп */
-  --row-gap: 40px;
-  --item-gap: 48px;
-  --logo-size: 120px; /* диаметр круга */
-  --name-size: 20px;
-  --kind-size: 12px;
+  --row-gap: 28px;
+  --item-gap: 44px;      /* расстояние между партнёрами */
+  --logo-size: 72px;     /* диаметр круга */
+  --logo-text-gap: 12px; /* от логотипа до текста */
+  --name-size: 15px;
+  --kind-size: 10px;
 
-  /* Отступы от краёв сайта */
-  --side: clamp(20px, 4vw, 48px);
+  --side: clamp(16px, 3vw, 32px);
 
   width: calc(100% - 32px);
   max-width: 1350px;
   box-sizing: border-box;
 
   border-radius: 10px;
-  margin: 0 auto 50px;
-  padding: 28px var(--side) 60px;
+  margin: 0 auto 40px;
+  padding: 24px var(--side) 32px;
 
   background: var(--bg);
   color: var(--ink);
@@ -33,10 +33,10 @@
 }
 
 .title {
-  margin: 0 0 clamp(28px, 3vw, 40px);
+  margin: 0 0 24px;
   padding: 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   color: #000;
   text-align: left;
 }
@@ -50,8 +50,8 @@
 /* Ряд с мягким исчезновением по краям */
 .row {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
 }
 
 .track {
@@ -61,50 +61,15 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
   will-change: transform;
 }
 
-/* Расстояние через padding, чтобы -50% совпадало ровно с одной копией */
+/* Расстояние через padding, чтобы половина ширины совпадала ровно с одной копией */
 .item {
   display: flex;
   align-items: center;
   flex-shrink: 0;
   padding-right: var(--item-gap);
-}
-
-/* Точка-разделитель перед каждым объектом */
-.dot {
-  width: 6px;
-  height: 6px;
-  margin-right: var(--item-gap);
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0.35;
-  flex-shrink: 0;
-}
-
-.toLeft {
-  animation-name: scrollLeft;
-}
-
-.toRight {
-  animation-name: scrollRight;
-}
-
-.row:hover .track {
-  animation-play-state: paused;
-}
-
-@keyframes scrollLeft {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-@keyframes scrollRight {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
 }
 
 .link {
@@ -120,20 +85,19 @@
   border-radius: 4px;
 }
 
-/* Одинаковый круг для всех логотипов — все выглядят ровно */
+/* Круг для логотипа */
 .logoBox {
   display: flex;
   align-items: center;
   justify-content: center;
   width: var(--logo-size);
   height: var(--logo-size);
-  margin-right: 18px;
-  padding: calc(var(--logo-size) * 0.14); /* отступ от края круга, чтобы углы логотипа не срезались */
+  margin-right: var(--logo-text-gap);
+  padding: calc(var(--logo-size) * 0.1);
   box-sizing: border-box;
   flex-shrink: 0;
-  overflow: hidden; /* обрезает лишние поля при scale > 1 */
+  overflow: hidden;
   background: #fff;
-  /* border: 1px solid #eceef0; */
   border-radius: 50%;
 }
 
@@ -142,7 +106,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 50%; /* картинка тоже круглая */
+  border-radius: 50%;
   pointer-events: none;
 }
 
@@ -150,13 +114,13 @@
 .text {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .kind {
   font-size: var(--kind-size);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
   white-space: nowrap;
@@ -164,11 +128,10 @@
 
 .name {
   font-size: var(--name-size);
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+  font-weight: 600;
+  line-height: 1.25;
   color: var(--ink);
-  white-space: nowrap; /* название в одну строку — ряды выглядят ровно */
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 
@@ -184,49 +147,41 @@
 /* Планшет */
 @media (max-width: 1024px) {
   .section {
-    --row-gap: 32px;
+    --row-gap: 24px;
     --item-gap: 36px;
-    --logo-size: 104px;
-    --name-size: 18px;
-    --kind-size: 11px;
-    --side: 20px;
+    --logo-size: 64px;
+    --name-size: 14px;
+    --kind-size: 9px;
+    --side: 16px;
     border-radius: 0;
   }
   .title {
-    font-size: 17px;
+    font-size: 16px;
   }
 }
 
 /* Телефон */
 @media (max-width: 600px) {
   .section {
-    --row-gap: 24px;
-    --item-gap: 24px;
-    --logo-size: 84px;
-    --name-size: 16px;
-    --kind-size: 10px;
-    --side: 16px;
+    --row-gap: 18px;
+    --item-gap: 28px;
+    --logo-size: 52px;
+    --logo-text-gap: 10px;
+    --name-size: 13px;
+    --kind-size: 9px;
+    --side: 12px;
 
     width: calc(100% - 24px);
-    padding: 20px var(--side) 36px;
+    padding: 18px var(--side) 24px;
   }
   .title {
-    font-size: 16px;
-  }
-  .logoBox {
-    margin-right: 12px;
-  }
-  .dot {
-    width: 5px;
-    height: 5px;
+    font-size: 15px;
+    margin-bottom: 18px;
   }
 }
 
-/* Без анимации для тех, кто её отключил — ряд можно листать */
+/* Для тех, кто отключил анимацию, — ряд можно листать */
 @media (prefers-reduced-motion: reduce) {
-  .track {
-    animation: none;
-  }
   .row {
     overflow-x: auto;
   }

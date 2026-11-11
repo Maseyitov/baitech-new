@@ -24,8 +24,7 @@ const CardSkeleton = () => (
   </div>
 );
 
-export function 
-Recommendations({ categoryName }) {
+export function Recommendations({ categoryName }) {
   const { t } = useTranslation();
   const {
     products = [],
@@ -53,9 +52,7 @@ Recommendations({ categoryName }) {
   return (
     <div className="recommendations">
       <div className="recommendations__head">
-        <h2 className="recommendations__title">
-          {categoryName ? categoryName : t("recommendations.title")}
-        </h2>
+        <h2 className="recommendations__title">{t("recommendations.title")}</h2>
 
         <Link
           href={

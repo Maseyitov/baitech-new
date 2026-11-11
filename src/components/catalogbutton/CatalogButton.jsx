@@ -6,11 +6,13 @@ import styles from './CatalogButton.module.scss';
 import { useProducts } from '@/lib/products/hooks/hooks';
 import { productApi } from '@/lib/products/api/useProducts';
 import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '../catalogmenu/Categoryicons';
+import { useSectionCategories } from '@/lib/catalog/sectionCategories';
 
 export default function CatalogButton() {
   const router = useRouter();
-  const { categories, brands: allBrands, isLoading } = useProducts();
-
+  const { categories: rawCategories, brands: allBrands, isLoading } = useProducts();
+  const categories = useSectionCategories(rawCategories);
+  
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   // subBrandsMap теперь используется и для подкатегорий (уровень 2), и для под-подкатегорий (уровень 3)

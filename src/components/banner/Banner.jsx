@@ -11,6 +11,7 @@ import './HeroBanner.scss';
 import { useBanners } from '../../lib/banners/hooks/hooks';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import Image from 'next/image';
+import { getSectionKeyByName } from '@/lib/catalog/sectionCategories';
 
 export function Banner({ categoryName }) {
   const [prevEl, setPrevEl] = useState(null);
@@ -18,8 +19,15 @@ export function Banner({ categoryName }) {
 
   const { data: banners = [], isLoading, error } = useBanners('main');
 
-  const filteredBanners = categoryName
-    ? banners.filter((b) => b.title?.toLowerCase() === categoryName.toLowerCase())
+    // Раздел текущей страницы: videoSurveillance или pcComponents
+  const pageSection = categoryName ? getSectionKeyByName(categoryName) : null;
+
+  const filteredBanners = pageSection
+    ? banners.filter((b) => {
+        const bannerSection = getSectionKeyByName(b.title);
+        // Баннер без раздела показываем везде, с разделом только в своём
+        return !bannerSection || bannerSection === pageSection;
+      })
     : banners;
 
   if (isLoading) return <div className="loader"></div>;
