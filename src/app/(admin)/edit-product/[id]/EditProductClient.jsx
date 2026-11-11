@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useProducts } from "@/lib/products/hooks/hooks";
@@ -8,12 +8,19 @@ import { productApi } from "@/lib/products/api/useProducts";
 import { Camera } from "lucide-react";
 import "./EditProduct.scss";
 
+// Столько же уровней, сколько в AddProduct
+const MAX_CATEGORY_LEVELS = 5;
+
+const getLevelTitle = (levelIndex) =>
+  levelIndex === 0 ? "Категория" : "Подкатегория";
+
 const EditProduct = () => {
   const params = useParams();
   const id = params.id;
   const router = useRouter();
 
-  const { categories, brands, updateProduct, isInitialLoading, isPending } = useProducts();
+  const { categories, brands, updateProduct, isInitialLoading, isPending } =
+    useProducts();
 
   // ← Загружаем товар напрямую по id
   const { data: product, isLoading: isProductLoading } = useQuery({
@@ -26,9 +33,8 @@ const EditProduct = () => {
     name: "",
     article: "",
     price: "",
-    parentCategory: "", // уровень 1 — корневая категория
-    category: "", // уровень 2 — подкатегория
-    subCategory: "", // уровень 3 — под-подкатегория
+    // Путь выбранных категорий: [id уровня 1, id уровня 2, ... id уровня 5]
+    categoryPath: [],
     brand: "",
     bonus: "",
     bonusCost: "", // стоимость товара в бонусных баллах — используется, если цена не указана
@@ -43,9 +49,29 @@ const EditProduct = () => {
   // removedExisting[i] — true, если пользователь явно удалил существующее фото
   const [imageFiles, setImageFiles] = useState([null, null, null, null]);
   const [previews, setPreviews] = useState([null, null, null, null]);
-  const [removedExisting, setRemovedExisting] = useState([false, false, false, false]);
+  const [removedExisting, setRemovedExisting] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
 
-  // Рекурсивно ищем путь от корня до нужной категории: [уровень1, уровень2, уровень3, ...]
+  // Чтобы форма заполнялась один раз и не затирала правки,
+  // если категории перезапросятся (например, при возврате на вкладку)
+  const isFormInitialized = useRef(false);
+
+  // ===== Категории =====
+
+  // Корневые категории (уровень 1)
+  const rootCategories = useMemo(
+    () =>
+      (categories || []).filter(
+        (item) => item.parent === null || item.parent === undefined,
+      ),
+    [categories],
+  );
+
+  // Рекурсивно ищем путь от корня до нужной категории: [уровень1, уровень2, ...]
   const findCategoryPath = (nodes, targetId, path = []) => {
     for (const node of nodes || []) {
       const newPath = [...path, node];
@@ -60,20 +86,21 @@ const EditProduct = () => {
 
   // ===== Заполняем форму при загрузке товара =====
   useEffect(() => {
-    if (!product) return;
+    if (!product || isInitialLoading || isFormInitialized.current) return;
 
     const categoryId = product.category || "";
-    const path = categoryId && categories?.length ? findCategoryPath(categories, categoryId) : null;
-
-    const [level1, level2, level3] = path || [];
+    const path =
+      categoryId && rootCategories.length
+        ? findCategoryPath(rootCategories, categoryId)
+        : null;
 
     setFormData({
       name: product.name || "",
       article: product.article || "",
       price: product.price || "",
-      parentCategory: level1 ? String(level1.id) : "",
-      category: level2 ? String(level2.id) : "",
-      subCategory: level3 ? String(level3.id) : "",
+      categoryPath: (path || [])
+        .slice(0, MAX_CATEGORY_LEVELS)
+        .map((node) => String(node.id)),
       brand: product.brand ? String(product.brand) : "",
       bonus: product.bonus || "",
       bonusCost: product.bonus_price ? String(product.bonus_price) : "",
@@ -90,7 +117,43 @@ const EditProduct = () => {
       });
       setPreviews(loadedPreviews);
     }
-  }, [product, categories]);
+
+    isFormInitialized.current = true;
+  }, [product, rootCategories, isInitialLoading]);
+
+  // Для каждого уровня: какие варианты показать, что выбрано, выбран ли родитель
+  const categoryLevels = useMemo(() => {
+    const levels = [];
+    let options = rootCategories;
+
+    for (let i = 0; i < MAX_CATEGORY_LEVELS; i++) {
+      const selectedId = formData.categoryPath[i] || "";
+      const isParentSelected = i === 0 || Boolean(formData.categoryPath[i - 1]);
+
+      levels.push({
+        index: i,
+        options: isParentSelected ? options : [],
+        selectedId,
+        isParentSelected,
+      });
+
+      const selected = options.find(
+        (item) => String(item.id) === String(selectedId),
+      );
+      options = selected?.subcategories || [];
+    }
+
+    return levels;
+  }, [rootCategories, formData.categoryPath]);
+
+  // Выбор на уровне N — всё, что глубже, сбрасывается
+  const handleCategoryChange = (levelIndex, value) => {
+    setFormData((prev) => {
+      const newPath = prev.categoryPath.slice(0, levelIndex);
+      if (value) newPath.push(value);
+      return { ...prev, categoryPath: newPath };
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -153,36 +216,17 @@ const EditProduct = () => {
     setRemovedExisting(newRemoved);
   };
 
-  // ===== Категории: разворачиваем дерево на 3 уровня =====
-  const rootCategories = useMemo(
-    () => (categories || []).filter((item) => item.parent === null || item.parent === undefined),
-    [categories]
-  );
-
-  // Уровень 2 — подкатегории выбранной корневой категории
-  const selectedParentCategory = useMemo(
-    () => rootCategories.find((item) => String(item.id) === String(formData.parentCategory)),
-    [rootCategories, formData.parentCategory]
-  );
-  const availableSubcategories = selectedParentCategory?.subcategories || [];
-
-  // Уровень 3 — под-подкатегории выбранной подкатегории (если есть)
-  const selectedSubCategory = useMemo(
-    () => availableSubcategories.find((item) => String(item.id) === String(formData.category)),
-    [availableSubcategories, formData.category]
-  );
-  const availableSubSubcategories = selectedSubCategory?.subcategories || [];
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Отправляем самую глубокую выбранную категорию
+    const finalCategory =
+      [...formData.categoryPath].reverse().find(Boolean) || "";
 
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("article", formData.article);
-    payload.append(
-      "category",
-      formData.subCategory || formData.category || formData.parentCategory
-    );
+    payload.append("category", finalCategory);
     payload.append("brand", formData.brand);
     payload.append("discount", formData.discount || "0");
     payload.append("description", formData.description);
@@ -280,7 +324,11 @@ const EditProduct = () => {
             {previews[3] ? (
               <div className="uploaded-image">
                 <img src={previews[3]} alt="Главное фото" />
-                <button type="button" className="remove-btn" onClick={() => removeImage(3)}>
+                <button
+                  type="button"
+                  className="remove-btn"
+                  onClick={() => removeImage(3)}
+                >
                   ✕
                 </button>
               </div>
@@ -304,96 +352,86 @@ const EditProduct = () => {
 
         <div className="form-group">
           <label>Название</label>
-          <input name="name" type="text" value={formData.name} onChange={handleInputChange} />
+          <input
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
         </div>
 
         <div className="form-row">
           <div className="form-group">
             <label>Артикул</label>
-            <input name="article" type="text" value={formData.article} onChange={handleInputChange} />
+            <input
+              name="article"
+              type="text"
+              value={formData.article}
+              onChange={handleInputChange}
+            />
           </div>
           <div className="form-group">
             <label>Цена (сом)</label>
-            <input name="price" type="number" value={formData.price} onChange={handleInputChange} />
+            <input
+              name="price"
+              type="number"
+              value={formData.price}
+              onChange={handleInputChange}
+            />
             <small className="field-hint">
               Оставьте пустым, если товар продаётся только за бонусные баллы
             </small>
           </div>
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label>Категория</label>
-            <select
-              name="parentCategory"
-              value={formData.parentCategory}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  parentCategory: e.target.value,
-                  category: "",
-                  subCategory: "",
-                }))
-              }
-            >
-              <option value="">Выберите категорию</option>
-              {rootCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* ===== Уровни категорий (генерируются автоматически) ===== */}
+        <div className="category-levels">
+          {categoryLevels.map((level) => {
+            const i = level.index;
 
-          <div className="form-group">
-            <label>Подкатегория</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  category: e.target.value,
-                  subCategory: "",
-                }))
-              }
-              disabled={!formData.parentCategory || availableSubcategories.length === 0}
-            >
-              <option value="">
-                {formData.parentCategory ? "Выберите подкатегорию" : "Сначала выберите категорию"}
-              </option>
-              {availableSubcategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            let placeholder;
+            if (!level.isParentSelected) {
+              placeholder = `Сначала выберите уровень ${i}`;
+            } else if (level.options.length === 0) {
+              placeholder = "Нет подкатегорий";
+            } else {
+              placeholder =
+                i === 0 ? "Выберите категорию" : "Выберите подкатегорию";
+            }
 
-          <div className="form-group">
-            <label>Под-подкатегория</label>
-            <select
-              name="subCategory"
-              value={formData.subCategory}
-              onChange={handleInputChange}
-              disabled={!formData.category || availableSubSubcategories.length === 0}
-            >
-              <option value="">
-                {formData.category ? "Выберите под-подкатегорию" : "Сначала выберите подкатегорию"}
-              </option>
-              {availableSubSubcategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            return (
+              <div className="form-group" key={`category-level-${i}`}>
+                <label>
+                  {getLevelTitle(i)}
+                  <span className="level-badge">уровень {i + 1}</span>
+                </label>
+                <select
+                  value={level.selectedId}
+                  onChange={(e) => handleCategoryChange(i, e.target.value)}
+                  disabled={
+                    !level.isParentSelected || level.options.length === 0
+                  }
+                >
+                  <option value="">{placeholder}</option>
+                  {level.options.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            );
+          })}
         </div>
 
         <div className="form-row">
           <div className="form-group">
             <label>Бренд</label>
-            <select name="brand" value={formData.brand} onChange={handleInputChange}>
+            <select
+              name="brand"
+              value={formData.brand}
+              onChange={handleInputChange}
+            >
               <option value="">Выберите бренд</option>
               {brands?.map((brand) => (
                 <option key={brand.id} value={brand.id}>
@@ -407,12 +445,22 @@ const EditProduct = () => {
             {Number(formData.price) > 0 ? (
               <>
                 <label>Бонусные баллы (%)</label>
-                <input name="bonus" type="number" value={formData.bonus} onChange={handleInputChange} />
+                <input
+                  name="bonus"
+                  type="number"
+                  value={formData.bonus}
+                  onChange={handleInputChange}
+                />
               </>
             ) : (
               <>
                 <label>Стоимость в бонусных баллах</label>
-                <input name="bonusCost" type="number" value={formData.bonusCost} onChange={handleInputChange} />
+                <input
+                  name="bonusCost"
+                  type="number"
+                  value={formData.bonusCost}
+                  onChange={handleInputChange}
+                />
                 <small className="field-hint">
                   Сколько баллов нужно накопить, чтобы получить этот товар
                 </small>
@@ -424,22 +472,39 @@ const EditProduct = () => {
         <div className="form-row">
           <div className="form-group">
             <label>Скидка (%)</label>
-            <input name="discount" type="number" value={formData.discount} onChange={handleInputChange} />
+            <input
+              name="discount"
+              type="number"
+              value={formData.discount}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
         <div className="form-group">
           <label>Описание</label>
-          <textarea name="description" value={formData.description} onChange={handleInputChange} />
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+          />
         </div>
 
         <div className="form-group">
           <label>Характеристики</label>
-          <textarea name="characteristics" value={formData.characteristics} onChange={handleInputChange} />
+          <textarea
+            name="characteristics"
+            value={formData.characteristics}
+            onChange={handleInputChange}
+          />
         </div>
 
         <div className="form-actions">
-          <button type="button" className="cancel-btn" onClick={() => router.back()}>
+          <button
+            type="button"
+            className="cancel-btn"
+            onClick={() => router.back()}
+          >
             Отмена
           </button>
           <button type="submit" className="submit-btn" disabled={isPending}>

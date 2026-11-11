@@ -19,6 +19,26 @@
     ]
   },
 
+  "search": {
+    "recent": "Recent searches",
+    "clearHistory": "Clear",
+    "popular": "Popular searches",
+    "products": "Products",
+    "categories": "Categories",
+    "categoryLabel": "category",
+    "showAll": "Show all results ({{count}})",
+    "loading": "Loading products…",
+    "showingFor": "Showing results for:",
+    "wrongLayout": "Looks like the wrong keyboard layout. Showing results for:",
+    "nothingFound": "No results for “{{query}}”",
+    "nothingFoundHint": "Check the spelling or search by SKU or brand.",
+    "article": "SKU",
+    "unavailable": "out of stock",
+    "currency": "som",
+    "clearInput": "Clear search",
+    "removeFromHistory": "Remove “{{text}}” from history"
+  },
+
   "navbar": {
     "catalog": "Catalog",
     "pcComponents": "PC Components",
@@ -215,6 +235,10 @@
       "returns": "Returns",
       "calculator": "Calculator",
       "diller": "For Diller"
+    },
+    "phones": {
+      "shop": "Store and services",
+      "academy": "Training at BAITECH Academy"
     },
     "map": "Map"
   },
@@ -3070,9 +3094,9 @@
     "items": "products",
     "names": {
       "video": "Video surveillance",
-      "alarm": "Security & fire alarms",
+      "alarm": "Alarm system OP",
       "network": "Network equipment",
-      "pc": "PC components",
+      "pc": "PC Accessories",
       "periphery": "PC peripherals",
       "office": "Office equipment",
       "power": "Power supplies",
@@ -3147,6 +3171,6 @@
       "subtitle": "We will calculate the cost of the project and connect at any stage of implementation"
     }
   },
-  "OurPartners": "Our Partners",
+  "ClientsAndPartners": "Customers and partners",
   "ball": "points"
 }

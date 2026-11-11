@@ -1,104 +1,153 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import styles from "./Partners.module.css";
 import { useTranslation } from "react-i18next";
 
-import logo03 from "../../../assets/svg/3.svg";
-import logo07 from "../../../assets/svg/7.svg";
-import logo08 from "../../../assets/svg/8.svg";
-import logo12 from "../../../assets/svg/12.svg";
-import logo15 from "../../../assets/svg/15.jpg";
-import logo17 from "../../../assets/svg/17.svg";
-import Customers1 from "../../../assets/png/Customers1.jpg";
-import Customers2 from "../../../assets/png/Customers2.jpg";
-import Customers4 from "../../../assets/png/Customers4.jpg";
-import Customers6 from "../../../assets/png/Customers6.jpg";
-import Customers7 from "../../../assets/png/Customers7.jpg";
-import Customers10 from "../../../assets/png/Customers10.jpg";
+// Новые логотипы
+import bmGroup from "../../../assets/png/partners/bm-group.png";
+import kumtor from "../../../assets/png/partners/kumtor.png";
+import akylman from "../../../assets/png/partners/akylman.png";
+import greenCity from "../../../assets/png/partners/green-city.png";
+import oldBishkek from "../../../assets/png/partners/old-bishkek.png";
+import alphaWhite from "../../../assets/png/partners/alpha-white.png";
+import kadastr from "../../../assets/png/partners/kadastr.png";
+import maarif from "../../../assets/png/partners/maarif.png";
+import alatooUniversity from "../../../assets/png/partners/alatoo-university.png";
+import bshz from "../../../assets/png/partners/bshz.png";
+import arabaev from "../../../assets/png/partners/arabaev.png";
+import mitSchool from "../../../assets/png/partners/mit-school.png";
+import ololoYurt from "../../../assets/png/partners/ololo-yurt.png";
+import campAlatoo from "../../../assets/png/partners/camp-alatoo.png";
+import manasAirport from "../../../assets/png/partners/manas-airport.png";
+import dasmia from "../../../assets/png/partners/dasmia.png";
+import oshAirport from "../../../assets/png/partners/osh-airport.png";
+import impulse from "../../../assets/png/partners/impulse.png";
+import kuwaitUniversity from "../../../assets/png/partners/kuwait-university.png";
+import ligaRobotov from "../../../assets/png/partners/liga-robotov.png";
+import cambridge from "../../../assets/png/partners/cambridge.png";
+import intellect from "../../../assets/png/partners/intellect.png";
+import alatooDevelopment from "../../../assets/png/partners/alatoo-development.png";
+import lomonosov from "../../../assets/png/partners/lomonosov.png";
+import mid from "../../../assets/png/partners/mid.png";
+
+// Старые логотипы (новых пока нет)
 import Customers12 from "../../../assets/png/Customers12.jpg";
 import Customers13 from "../../../assets/png/Customers13.png";
 import Customers15 from "../../../assets/png/Customers15.jpg";
-import Customers16 from "../../../assets/png/Customers16.jpg";
-import Customers18 from "../../../assets/png/Customers18.jpg";
-import Customers20 from "../../../assets/png/Customers20.jpg";
-import Customers22 from "../../../assets/png/Customers22.jpg";
-import Customers24 from "../../../assets/png/Customers24.jpg";
-import Customers33 from "../../../assets/png/Customers33.png";
 import Customers26 from "../../../assets/png/Customers26.png";
-import Customers5 from "../../../assets/png/Customers5.jpg";
-import Customers27 from "../../../assets/png/Customers27.jpg";
-import Customers28 from "../../../assets/png/Customers28.png";
-import Customers29 from "../../../assets/png/Customers29.jpg";
-import Customers30 from "../../../assets/png/Customers30.jpg";
-import Customers31 from "../../../assets/png/Customers31.jpg";
-import Customers32 from "../../../assets/png/Customers32.jpg";
 
-
-// Окончательный список заказчиков и партнёров (29 шт.)
-// У кого нет src — показывается только текст. Чтобы добавить логотип,
-// импортируйте файл и пропишите src (и при необходимости scale).
+// Список заказчиков и партнёров (29 шт.)
 const DEFAULT_PARTNERS = [
-  { src: Customers4, name: "БМ Групп", kind: "Офис" },
-  { src: Customers31, name: "Кумтор", kind: "Горнодобыча" },
-  {
-    src: Customers6,
-    name: "Президентский лицей «Акылман»",
-    kind: "Образование",
-  },
+  { src: bmGroup, name: "ОсОО «БМ Групп»", kind: "Строительство" },
+  { src: kumtor, name: "ЗАО «Кумтор Голд Компани»", kind: "Горнодобыча" },
+  { src: akylman, name: "Президентский лицей «Акылман»", kind: "Образование" },
   { src: Customers12, name: "ЖК «Сандык»", kind: "Жилой комплекс" },
   { src: Customers13, name: "ЖК «Чырак»", kind: "Жилой комплекс" },
-  { src: Customers33, name: "Грин Сити", kind: "Балыкчы", scale: 2.4 },
-  { src: Customers26, name: "Мечеть Сарахси", kind: "Религиозный объект" },
-  { src: Customers27, name: "Олд Бишкек", kind: "Бишкек", scale: 1.4 },
+  {
+    src: greenCity,
+    name: "Курортный комплекс «Green City Centre»",
+    kind: "Балыкчы",
+  },
+  {
+    src: Customers26,
+    name: "Центральная мечеть имени Имама Сарахси",
+    kind: "Религиозный объект",
+  },
+  {
+    src: oldBishkek,
+    name: "Подземный торговый комплекс «Old Bishkek»",
+    kind: "Торговля",
+  },
   {
     src: Customers15,
     name: "Пансионат «Кооператор»",
     kind: "Отдых",
     scale: 1.2,
   },
-  { src: Customers16, name: "Пансионат «Alpha White»", kind: "Иссык-Куль" },
-  { src: Customers5, name: "Кадастр", kind: "Госучреждение" },
-  { src: Customers2, name: "Маариф", kind: "Образование", scale: 1.7 },
-  { src: Customers28, name: "Университет «Ала-Тоо»", kind: "Образование" },
   {
-    src: logo12,
-    name: "Бишкекский штамповочный завод",
-    kind: "Производство",
-    scale: 3.5,
+    src: alphaWhite,
+    name: "Пансионат «Alpha Life Resort»",
+    kind: "Иссык-Куль",
   },
-  { src: Customers29, name: "Университет им. Арабаева", kind: "Образование", scale: 1.3 },
-  { src: Customers18, name: "Школа MIT", kind: "Образование" },
-  { src: logo08, name: "Ололо Юрт", kind: "Отдых", scale: 3.3 },
-  { src: Customers20, name: "КЭМП Ала-Тоо", kind: "Отдых", scale: 1.1 },
-  { src: logo15, name: "Международный аэропорт «Манас»", kind: "Аэропорт" },
-  { src: logo17, name: "Фитнес-центр «Дасмия»", kind: "Спорт", scale: 1.9 },
   {
-    src: Customers10,
-    name: "Международный аэропорт «Ош»",
+    src: kadastr,
+    name: "Государственное учреждение «Кадастр»",
+    kind: "Госучреждение",
+  },
+  {
+    src: maarif,
+    name: "Образовательный комплекс «Маариф»",
+    kind: "Образование",
+  },
+  {
+    src: alatooUniversity,
+    name: "Международный университет Ала-Тоо",
+    kind: "Образование",
+  },
+  { src: bshz, name: "Бишкекский штамповочный завод", kind: "Производство" },
+  { src: arabaev, name: "КГУ им. И. Арабаева", kind: "Образование" },
+  {
+    src: mitSchool,
+    name: "Частная школа MIT",
+    kind: "Образование",
+    scale: 1.8,
+  },
+  {
+    src: ololoYurt,
+    name: "Этнохостел и коворкинг-центр «ololoYurt»",
+    kind: "Отдых",
+  },
+  { src: campAlatoo, name: "КЭМП Ала-Тоо", kind: "Общественный фонд" },
+  {
+    src: manasAirport,
+    name: "Международный аэропорт «Манас»",
     kind: "Аэропорт",
-    scale: 1.4,
   },
-  { src: Customers22, name: "Фитнес-клуб «Импульс»", kind: "Спорт" },
+  { src: dasmia, name: "Фитнес-клуб «Дасмия»", kind: "Спорт" },
+  { src: oshAirport, name: "Международный аэропорт «Ош»", kind: "Аэропорт", scale: 1.4 },
+  { src: impulse, name: "Фитнес-клуб «Impulse»", kind: "Спорт" },
   {
-    src: logo03,
+    src: kuwaitUniversity,
     name: "Эл аралык Кувейт университети",
     kind: "Образование",
-    scale: 2.1,
   },
-  { src: logo07, name: "Лего роботов", kind: "Образование", scale: 2.3 },
-  { src: Customers30, name: "Кембридж школа", kind: "Образование" },
-  { src: Customers24, name: "Колледж «Интеллект»", kind: "Образование" },
-  { src: Customers32, name: "Ала-Тоо Девелопмент", kind: "Строительство" },
-  { src: Customers1, name: "Школа им. Ломоносова", kind: "Образование" },
-  { src: Customers7, name: "МИД", kind: "Бишкек" },
+  {
+    src: ligaRobotov,
+    name: "Международная школа программирования и робототехники «Лига роботов»",
+    kind: "Образование",
+  },
+  {
+    src: cambridge,
+    name: "Кембриджская международная школа",
+    kind: "Образование",
+  },
+  {
+    src: intellect,
+    name: "Intellect IT & Business College",
+    kind: "Образование",
+  },
+  {
+    src: alatooDevelopment,
+    name: "Ала-Тоо Девелопмент",
+    kind: "Строительство",
+  },
+  { src: lomonosov, name: "НОК «Школа Ломоносова»", kind: "Образование" },
+  {
+    src: mid,
+    name: "Министерство иностранных дел Кыргызской Республики",
+    kind: "Госучреждение",
+  },
 ];
 
 const ROWS = 3;
 const MIN_PER_ROW = 6; // чтобы ряд всегда был шире экрана
 const SECONDS_PER_ITEM = 9; // больше = медленнее
+const DRAG_THRESHOLD = 5; // сколько px надо сдвинуть, чтобы это считалось перетаскиванием
+const INERTIA_DECAY = 0.04; // доля скорости, что остаётся через 1 с после броска
+const PAUSE_ON_HOVER = true; // останавливать ряд, когда на нём курсор
 
-// Делим партнёров на 3 ряда по очереди: 1-й → ряд 1, 2-й → ряд 2, ...
+// Делим партнёров на 3 ряда по очереди
 function splitIntoRows(list, rows) {
   const result = Array.from({ length: rows }, () => []);
   list.forEach((p, i) => result[i % rows].push(p));
@@ -113,6 +162,14 @@ function fillRow(row) {
   return out;
 }
 
+// Держим сдвиг в диапазоне (-half, 0], чтобы лента была бесконечной
+function wrap(x, half) {
+  if (half <= 0) return 0;
+  let r = x % half;
+  if (r > 0) r -= half;
+  return r;
+}
+
 function PartnerItem({ partner, hidden }) {
   const content = (
     <>
@@ -122,8 +179,8 @@ function PartnerItem({ partner, hidden }) {
             className={styles.logo}
             src={partner.src}
             alt=""
-            width={320}
-            height={200}
+            width={160}
+            height={160}
             quality={90}
             draggable={false}
             style={{
@@ -147,7 +204,6 @@ function PartnerItem({ partner, hidden }) {
 
   return (
     <li className={styles.item} aria-hidden={hidden || undefined}>
-      <span className={styles.dot} aria-hidden="true" />
       {partner.href ? (
         <a
           className={styles.link}
@@ -155,6 +211,7 @@ function PartnerItem({ partner, hidden }) {
           target="_blank"
           rel="noopener noreferrer"
           tabIndex={hidden ? -1 : undefined}
+          draggable={false}
         >
           {content}
         </a>
@@ -162,6 +219,161 @@ function PartnerItem({ partner, hidden }) {
         content
       )}
     </li>
+  );
+}
+
+function MarqueeRow({ row, reverse }) {
+  const trackRef = useRef(null);
+  const s = useRef({
+    offset: 0,
+    half: 0,
+    vel: 0,
+    dragging: false,
+    moved: false,
+    hovered: false,
+    startX: 0,
+    startOffset: 0,
+    lastX: 0,
+    lastT: 0,
+  });
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const st = s.current;
+
+    const measure = () => {
+      st.half = track.scrollWidth / 2;
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(track);
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const dir = reverse ? 1 : -1;
+
+    let raf;
+    let prev = performance.now();
+    const tick = (now) => {
+      const dt = Math.min((now - prev) / 1000, 0.1);
+      prev = now;
+
+      if (st.half > 0 && !st.dragging) {
+        // автопрокрутка
+        if (!reduceMotion && !(PAUSE_ON_HOVER && st.hovered)) {
+          const speed = st.half / (row.length * SECONDS_PER_ITEM);
+          st.offset += dir * speed * dt;
+        }
+        // инерция после броска
+        if (Math.abs(st.vel) > 1) {
+          st.offset += st.vel * dt;
+          st.vel *= Math.pow(INERTIA_DECAY, dt);
+        } else {
+          st.vel = 0;
+        }
+      }
+
+      st.offset = wrap(st.offset, st.half);
+      track.style.transform = `translate3d(${st.offset}px, 0, 0)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [row.length, reverse]);
+
+  const onPointerDown = (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const st = s.current;
+    st.dragging = true;
+    st.moved = false;
+    st.vel = 0;
+    st.startX = e.clientX;
+    st.startOffset = st.offset;
+    st.lastX = e.clientX;
+    st.lastT = performance.now();
+  };
+
+  const onPointerMove = (e) => {
+    const st = s.current;
+    if (!st.dragging) return;
+    const dx = e.clientX - st.startX;
+
+    if (!st.moved) {
+      if (Math.abs(dx) < DRAG_THRESHOLD) return;
+      st.moved = true;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      e.currentTarget.style.cursor = "grabbing";
+    }
+
+    st.offset = st.startOffset + dx;
+
+    const now = performance.now();
+    const dtMs = now - st.lastT;
+    if (dtMs > 0) {
+      const v = ((e.clientX - st.lastX) / dtMs) * 1000;
+      st.vel = st.vel * 0.7 + v * 0.3; // сглаживаем скорость
+    }
+    st.lastX = e.clientX;
+    st.lastT = now;
+  };
+
+  const endDrag = (e) => {
+    const st = s.current;
+    if (!st.dragging) return;
+    st.dragging = false;
+    // если перед отпусканием остановились — без инерции
+    if (performance.now() - st.lastT > 80) st.vel = 0;
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    e.currentTarget.style.cursor = "";
+  };
+
+  // Не даём сработать клику по ссылке, если ряд тянули
+  const onClickCapture = (e) => {
+    if (s.current.moved) {
+      e.preventDefault();
+      e.stopPropagation();
+      s.current.moved = false;
+    }
+  };
+
+  return (
+    <div
+      className={styles.row}
+      style={{ cursor: "grab", touchAction: "pan-y", userSelect: "none" }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") s.current.hovered = true;
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") s.current.hovered = false;
+      }}
+      onClickCapture={onClickCapture}
+      onDragStart={(e) => e.preventDefault()}
+    >
+      <ul ref={trackRef} className={styles.track}>
+        {/* Две одинаковые копии для бесшовной ленты */}
+        {[0, 1].map((copy) =>
+          row.map((partner, i) => (
+            <PartnerItem
+              key={`${copy}-${i}`}
+              partner={partner}
+              hidden={copy === 1}
+            />
+          )),
+        )}
+      </ul>
+    </div>
   );
 }
 
@@ -191,32 +403,10 @@ export default function Partners({ partners = DEFAULT_PARTNERS }) {
       </h2>
 
       <div className={styles.rows}>
-        {rows.map((row, rowIndex) => {
+        {rows.map((row, rowIndex) => (
           // ряд 1 — влево, ряд 2 — вправо, ряд 3 — влево
-          const reverse = rowIndex % 2 === 1;
-          const duration = row.length * SECONDS_PER_ITEM;
-
-          return (
-            <div className={styles.row} key={rowIndex}>
-              <ul
-                className={`${styles.track} ${reverse ? styles.toRight : styles.toLeft}`}
-                style={{ animationDuration: `${duration}s` }}
-              >
-                {/* Две одинаковые копии: анимация сдвигает на -50%,
-                    и вторая копия бесшовно занимает место первой */}
-                {[0, 1].map((copy) =>
-                  row.map((partner, i) => (
-                    <PartnerItem
-                      key={`${copy}-${i}`}
-                      partner={partner}
-                      hidden={copy === 1}
-                    />
-                  )),
-                )}
-              </ul>
-            </div>
-          );
-        })}
+          <MarqueeRow key={rowIndex} row={row} reverse={rowIndex % 2 === 1} />
+        ))}
       </div>
     </section>
   );

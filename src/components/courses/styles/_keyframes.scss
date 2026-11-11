@@ -1,0 +1,16 @@
+/* ===== Анимации ===== */
+@keyframes bt-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 60%, transparent); } 50% { box-shadow: 0 0 0 7px transparent; } }
+@keyframes bt-wordUp { from { transform: translateY(110%); } to { transform: none; } }
+@keyframes bt-fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes bt-showIn { from { opacity: 0; transform: translateY(60px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes bt-breathe { 50% { opacity: .55; transform: scale(1.08); } }
+@keyframes bt-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes bt-chipIn { from { opacity: 0; transform: translateY(16px) scale(.9); } to { opacity: 1; transform: none; } }
+@keyframes bt-ir { 50% { opacity: .25; } }
+@keyframes bt-flow { to { stroke-dashoffset: -34; } }
+@keyframes bt-drive { 0% { transform: translateX(-120px); } 100% { transform: translateX(360px); } }
+@keyframes bt-walk { 0% { transform: translateX(-30px); } 100% { transform: translateX(260px); } }
+@keyframes bt-stride { from { transform: skewX(-12deg); } to { transform: skewX(12deg); } }
+@keyframes bt-cloud { from { transform: translateX(-200px); } to { transform: translateX(1100px); } }
+@keyframes bt-sweep { from { transform: rotate(-55deg); } to { transform: rotate(55deg); } }
+@keyframes bt-menuIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }

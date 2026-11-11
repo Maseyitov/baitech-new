@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Navbar.module.scss";
 import {
   LayoutGrid,
@@ -16,19 +16,19 @@ import { useTranslation } from "react-i18next";
 import { useProducts } from "@/lib/products/hooks/hooks";
 
 const CATEGORY_MATCHERS = {
-  pcComponents: [
-    "компьютер",
-    "комплектующ",
-    "pc component",
-    "hardware",
-    "компьютердик",
-  ],
   videoSurveillance: [
     "видеонаблюд",
     "камер",
     "video surveillance",
     "cctv",
     "видеокөз",
+  ],
+  pcComponents: [
+    "компьютер",
+    "комплектующ",
+    "pc component",
+    "hardware",
+    "компьютердик",
   ],
 };
 
@@ -38,6 +38,15 @@ export default function NavItem() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { categories } = useProducts();
+  const [lastSection, setLastSection] = useState(null);
+
+  useEffect(() => {
+    try {
+      setLastSection(
+        localStorage.getItem("lastSection") || "videoSurveillance",
+      );
+    } catch {}
+  }, [pathname, searchParams]);
 
   const normalizeText = (value) =>
     String(value || "")
@@ -72,18 +81,18 @@ export default function NavItem() {
       isCatalog: true,
     },
     {
-      label: t("navbar.pcComponents"),
-      link: "/",
-      categoryKey: "pcComponents",
-      fallbackCategory: t("navbar.pcComponents"),
-      icon: <Monitor size={18} />,
-    },
-    {
       label: t("navbar.videoSurveillance"),
       link: "/",
       categoryKey: "videoSurveillance",
       fallbackCategory: t("navbar.videoSurveillance"),
       icon: <Video size={18} />,
+    },
+    {
+      label: t("navbar.pcComponents"),
+      link: "/",
+      categoryKey: "pcComponents",
+      fallbackCategory: t("navbar.pcComponents"),
+      icon: <Monitor size={18} />,
     },
     {
       label: t("navbar.solutions"),
@@ -119,7 +128,7 @@ export default function NavItem() {
     const itemCategory = getItemCategory(item);
     if (itemCategory) {
       const currentCategory = searchParams.get("category");
-      if (!currentCategory) return false;
+      if (!currentCategory) return item.categoryKey === lastSection;
       if (currentCategory === itemCategory) return true;
 
       const parentCategory = categories?.find(

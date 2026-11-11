@@ -50,15 +50,20 @@ export default function PopularBrands({ brands = popularBrands }) {
       startScroll: trackRef.current.scrollLeft,
       moved: false,
     };
-    setIsDragging(true);
+    // setIsDragging(true) здесь больше НЕ вызываем, иначе клик не срабатывает
   };
 
   const onPointerMove = (e) => {
     const d = dragRef.current;
     if (!d.active) return;
     const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 5) d.moved = true;
-    trackRef.current.scrollLeft = d.startScroll - dx;
+    if (!d.moved && Math.abs(dx) > 5) {
+      d.moved = true;
+      setIsDragging(true); // включаем режим перетаскивания только после реального сдвига
+    }
+    if (d.moved) {
+      trackRef.current.scrollLeft = d.startScroll - dx;
+    }
   };
 
   const endDrag = () => {

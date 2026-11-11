@@ -1,30 +1,19 @@
-'use client'
-import { useQuery } from '@tanstack/react-query'
-import { productApi } from '@/lib/products/api/useProducts'
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { productApi } from "@/lib/products/api/useProducts";
 
-const normalizeListResponse = (data) => {
-  if (Array.isArray(data)) return data
-  if (Array.isArray(data?.results)) return data.results
-  return []
-}
+// Общий пул товаров для поиска. Header и CatalogPage используют один ключ,
+// поэтому товары грузятся один раз и берутся из кэша.
+// "v2" — чтобы не подхватился старый кэш с полными (тяжёлыми) товарами.
+export const SEARCH_POOL_BASE_KEY = ["products", "search-pool-v2"];
 
-// Без фильтров — общий "пул" товаров для поиска.
-// Header и CatalogPage (без category/brand) должны использовать ИМЕННО этот ключ,
-// чтобы кэш переиспользовался между ними.
-export const SEARCH_POOL_BASE_KEY = ['products', 'search-all-pages']
-
-export function useSearchProductsPool({ category = '', brand = '', enabled = true } = {}) {
-  const hasFilters = Boolean(category || brand)
-
+export function useSearchProductsPool({ enabled = true } = {}) {
   return useQuery({
-    queryKey: hasFilters
-      ? [...SEARCH_POOL_BASE_KEY, { category, brand }]
-      : SEARCH_POOL_BASE_KEY,
-    queryFn: () => productApi.getAllPages(hasFilters ? { category, brand } : {}),
+    queryKey: SEARCH_POOL_BASE_KEY,
+    queryFn: ({ signal }) => productApi.getSearchPool({ signal }),
     enabled,
-    select: normalizeListResponse,
-    retry: false,
+    retry: 1,
     staleTime: 30 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
-  })
+  });
 }

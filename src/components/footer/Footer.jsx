@@ -1,19 +1,19 @@
-"use client"
-import './style.scss';
-import logo from '../../../assets/svg/Байтех лого 2 1.svg';
-import finik from '../../../assets/svg/Logo Purple 1.svg';
-import mbank from '../../../assets/svg/Component 19.svg';
-import optima from '../../../assets/svg/image-removebg-preview (6) 1.svg';
+"use client";
+import "./style.scss";
+import logo from "../../../assets/svg/Байтех лого 2 1.svg";
+import finik from "../../../assets/svg/Logo Purple 1.svg";
+import mbank from "../../../assets/svg/Component 19.svg";
+import optima from "../../../assets/svg/image-removebg-preview (6) 1.svg";
 
-import { FiPhone, FiClock, FiMapPin, FiGlobe } from 'react-icons/fi';
-import { FaWhatsapp, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FiPhone, FiClock, FiMapPin, FiGlobe } from "react-icons/fi";
+import { FaWhatsapp, FaInstagram, FaYoutube } from "react-icons/fa";
 import { IoChevronDownSharp } from "react-icons/io5";
-import Image from 'next/image';
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useTranslation } from 'react-i18next';
-import { useSiteSettings } from '@/lib/settings/hook';
+import Image from "next/image";
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { useSiteSettings } from "@/lib/settings/hook";
 
 function Footer() {
   const { t } = useTranslation();
@@ -85,12 +85,26 @@ function Footer() {
             <Image src={logo} alt="Baitex" className="footer__logo" />
           </Link>
 
-          <div className="footer__item">
+          <div className="footer__item footer__item--phones">
             <FiPhone />
             {isLoading ? (
               <span className="footer__skeleton" />
             ) : (
-              <a href={`tel:${settings?.phone}`}>{settings?.phone}</a>
+              <div className="footer__phones">
+                <div className="footer__phone">
+                  <span className="footer__phone-label">
+                    {t("footer.phones.shop")}
+                  </span>
+                  <span className="footer__phone-number">+996 558 000 222</span>
+                </div>
+
+                <div className="footer__phone">
+                  <span className="footer__phone-label">
+                    {t("footer.phones.academy")}
+                  </span>
+                  <span className="footer__phone-number">+996 505 406 805</span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -273,7 +287,7 @@ function Footer() {
 
       <div className="footer__bottom flex justify-around  items-center gap-5">
         <h3>Baitech © 2021</h3>
-        
+
         <a
           className="border-b-[1px] border-b-[#0e2eff] leading-snug "
           href="https://baitech-it.vercel.app/"

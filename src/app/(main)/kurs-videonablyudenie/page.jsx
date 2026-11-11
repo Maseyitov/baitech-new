@@ -1,4 +1,4 @@
-import CoursesPage from "@/components/CoursesPage/CoursesPage";
+import CoursesPage from "@/components/courses/CoursesPage";
 
 export const metadata = {
   title: "Курс по видеонаблюдению — БАЙТЕХ",

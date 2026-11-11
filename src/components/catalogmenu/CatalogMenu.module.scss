@@ -1,3 +1,10 @@
+// ── Размеры окна — меняйте здесь ───────────────────────────────
+$menu-width: 1280px; // ширина окна (было 1200px)
+$menu-height: 560px; // постоянная высота окна
+$menu-top: 168px; // от верха экрана до окна (было 150px — окно налезало на кнопку «Каталог»)
+$sidebar-width: 290px; // ширина левой колонки (было 260px)
+$accent: #005bff;
+
 .overlay {
   position: fixed;
   top: 0;
@@ -8,58 +15,63 @@
   z-index: 1000;
   display: flex;
   justify-content: center;
-  align-items: center; // По центру вертикально и горизонтально
-  transition: all 0.3s ease;
+  align-items: center;
 
-    @media (min-width: 1200px) {
+  @media (min-width: 1200px) {
     align-items: flex-start;
-    padding-top: 150px; // подберите под высоту вашей шапки
+    padding-top: $menu-top;
   }
 }
 
 .catalogContainer {
   display: flex;
+  width: $menu-width;
+  max-width: 95vw;
+  // Высота постоянная: окно не прыгает при переходе между категориями.
+  // Если категория длинная — правая часть прокручивается внутри окна.
+  height: min(#{$menu-height}, 85vh);
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   border: 1px solid #f0f0f0;
-  min-height: 400px;
-  max-height: 80vh;
-  width: 1200px;       // Фиксированная ширина
-  overflow: visible;
-  
-  max-width: 95vw;
+  overflow: hidden;
 
-    @media (min-width: 1200px) {
-    max-height: calc(100vh - 170px); // чтобы не вылезала за экран
+  @media (min-width: 1200px) {
+    height: min(#{$menu-height}, calc(100vh - #{$menu-top} - 24px));
+  }
+}
+
+// Общий вид полосы прокрутки
+@mixin thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: $accent transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $accent;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #0868c0;
   }
 }
 
 // ── Колонка 1: категории ───────────────────────────────────────
 .sidebar {
-  width: 260px;
-  border-right: 1px solid #f0f0f0;
-  padding: 8px 0;
-  overflow-y: auto;
+  width: $sidebar-width;
   flex-shrink: 0;
-}
-.sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent; /* или #f1f1f1 */
-  border-radius: 10px;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: #0a77dd;
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #0868c0;
+  padding: 8px 0;
+  border-right: 1px solid #f0f0f0;
+  overflow-y: auto;
+  @include thin-scrollbar;
 }
 
 .navButton {
@@ -67,36 +79,39 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 16px;
+  gap: 8px;
+  min-height: 46px;
+  padding: 8px 16px 8px 20px;
   border: none;
   background: transparent;
   cursor: pointer;
   position: relative;
   transition: background 0.15s ease;
-  gap: 8px;
 
   .navLeft {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     min-width: 0;
   }
 
   .icon {
     display: flex;
     align-items: center;
-    color: #005bff;
+    color: $accent;
     flex-shrink: 0;
   }
 
+  // Длинные названия переносятся на 2 строки вместо «Системы доступа СКУД ...»
   .label {
-    font-size: 14px;
-    color: #333;
-    font-weight: 400;
-    text-align: left;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 14px;
+    line-height: 1.3;
+    color: #333;
+    text-align: left;
   }
 
   .chevron {
@@ -109,59 +124,65 @@
     background-color: #f0f7ff;
 
     .label {
-      color: #005bff;
+      color: $accent;
       font-weight: 500;
     }
 
-    .icon { color: #005bff; }
-    .chevron { color: #005bff; }
+    .chevron {
+      color: $accent;
+    }
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
       width: 3px;
-      background-color: #005bff;
+      background-color: $accent;
       border-radius: 0 2px 2px 0;
     }
   }
 
   &:hover:not(.active) {
     background-color: #fafafa;
-    .chevron { color: #999; }
+
+    .chevron {
+      color: #999;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: -2px;
   }
 }
 
-// ── Колонки 2 и 3: подкатегории ───────────────────────────────
+// ── Правая часть: подкатегории ────────────────────────────────
 .content {
   flex: 1;
-  padding: 24px 28px;
+  min-width: 0;
+  padding: 24px 32px 28px;
   overflow-y: auto;
-    overflow-x: visible; 
-    
-  position: relative; // Для попапа
+  position: relative;
+  @include thin-scrollbar;
 }
 
+// Группы раскладываются по двум колонкам сверху вниз, как на Дельте.
+// Колонки выравниваются по высоте автоматически.
 .columnsWrap {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0 32px;
-  align-items: start;
-}
-
-.subColumn {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  columns: 2;
+  column-gap: 48px;
 }
 
 .subGroup {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  position: relative; // Попап позиционируется относительно subGroup
+  position: relative;
+  // Группа не разрывается между колонками
+  break-inside: avoid;
+  margin-bottom: 22px;
 }
 
 .subTitle {
@@ -169,16 +190,16 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
   font-size: 14px;
   font-weight: 600;
   color: #222;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
   text-align: left;
+  cursor: pointer;
+  position: relative;
   transition: color 0.15s;
-  position: relative; // Попап относительно кнопки
 
   .subChevron {
     color: #aaa;
@@ -188,26 +209,85 @@
 
   &:hover,
   &.subTitleActive {
-    color: #005bff;
-    .subChevron { color: #005bff; }
+    color: $accent;
+
+    .subChevron {
+      color: $accent;
+    }
   }
 }
 
-// Попап брендов — справа от кнопки
+// Подкатегории 3-го уровня
+.subList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  padding: 3px 0;
+  border: none;
+  background: none;
+  font-size: 14px;
+  color: #777;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+
+  &:hover,
+  &.subItemActive {
+    color: $accent;
+  }
+}
+
+.showMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  padding: 3px 0;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: $accent;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.showMoreIcon {
+  transition: transform 0.15s ease;
+}
+
+.showMoreIconOpen {
+  transform: rotate(180deg);
+}
+
+// ── Попап брендов — справа от пункта ──────────────────────────
 .brandsPopup {
   position: absolute;
   top: 0;
   left: calc(100% + 8px);
-  z-index: 20;
+  z-index: 30;
+  min-width: 220px;
+  max-width: 300px;
+  padding: 6px 0;
   background: #fff;
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  padding: 6px 0;
-  min-width: 170px;
-  max-width: 220px;
-  white-space: normal; // Сбрасываем nowrap от родителя
-  font-weight: 400;    // Сбрасываем bold от родителя
+  white-space: normal;
+  font-weight: 400;
 }
 
 .brandsList {
@@ -219,19 +299,22 @@
 .brandItem {
   display: block;
   width: 100%;
-  padding: 4px 16px;
-  font-size: 13px;
-  color: #444;
-  background: none;
+  padding: 6px 16px;
   border: none;
+  background: none;
+  font-size: 13px;
+  line-height: 1.3;
+  color: #444;
   text-align: left;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
-  // &:hover {
-  //   // background: #f0f7ff;
-  //   // color: #005bff;
-  // }
+  &:hover {
+    background: #f0f7ff;
+    color: $accent;
+  }
 }
 
 .popupLoader {
@@ -241,54 +324,16 @@
   padding: 12px;
 }
 
-.popupEmpty {
-  font-size: 13px;
-  color: #aaa;
-  padding: 8px 16px;
-  margin: 0;
-}
-
-// Подкатегории 2-го уровня
-.subList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.subItem {
-  font-size: 14px;
-  color: #777;
-  border: none;
-  width: auto;
-  padding: 3px 0;
-  cursor: pointer;
-  // text-align: left;
-  // transition: color 0.15s;
- display: flex;
-  align-items: center;
-   position: relative; 
-  gap: 4px;
-  &:hover { color: #005bff; }
-}
-
 // ── Утилиты ────────────────────────────────────────────────────
-.loader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
 .spinner {
   animation: spin 0.8s linear infinite;
-  color: #005bff;
+  color: $accent;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty {
@@ -297,18 +342,13 @@
   padding: 20px 0;
 }
 
-.brandsPopup {
-  min-width: 220px;
-  max-width: 300px;
-  z-index: 30;
-}
+// На узких экранах подкатегории в одну колонку
+@media (max-width: 900px) {
+  .columnsWrap {
+    columns: 1;
+  }
 
-.brandItem {
-  padding: 6px 16px;
-  line-height: 1.3;
-
-  &:hover {
-    background: #f0f7ff;
-    color: #005bff;
+  .sidebar {
+    width: 240px;
   }
 }

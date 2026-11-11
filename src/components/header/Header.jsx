@@ -16,111 +16,19 @@ import { IoLanguageOutline } from "react-icons/io5";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import Link from "next/link";
 import ModalAuth from "../ui/modalauth/ModalAuth";
-import { useEffect, useRef, useState, useMemo } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import SearchBox from "../SearchBox/SearchBox";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useCart } from "@/lib/cart/hooks/hooks";
 import { useSiteSettings } from "@/lib/settings/hook";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { productApi } from "@/lib/products/api/useProducts";
-import { useSearchProductsPool } from "@/lib/products/hooks/useSearchProductsPool";
-import {
-  searchProducts,
-  buildCategoryNameMap,
-  buildBrandNameMap,
-} from "@/lib/products/search";
+import { useQueryClient } from "@tanstack/react-query";
 
-const TOTAL_PRODUCTS = 100000;
-const INTRO_MS = 3600;
-const HINT_MS = 1600;
-
-const HINTS_BY_LANG = {
-  ru: [
-    "Wi-Fi камера",
-    "артикул 12345",
-    "бренд DAHUA",
-    "серверный Шкаф",
-    "Монитор 34 дюйма",
-  ],
-  en: [
-    "Wi-Fi camera",
-    "article 12345",
-    "DAHUA brand",
-    "Server cabinet",
-    "34-inch monitor",
-  ],
-  ky: [
-    "Wi-Fi камера",
-    "артикул 12345",
-    "DAHUA бренди",
-    "Сервердик шкаф",
-    "34 дюймдук монитор",
-  ],
-};
-
-function AnimatedSearchPlaceholder({ hidden }) {
-  const { t, i18n } = useTranslation();
-
-  const lang = (i18n.resolvedLanguage || i18n.language || "ru").split("-")[0];
-  const hints = HINTS_BY_LANG[lang] || HINTS_BY_LANG.ru;
-
-  const [step, setStep] = useState(-1);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const id = setTimeout(
-      () => setStep((s) => (s + 1 >= hints.length ? -1 : s + 1)),
-      step === -1 ? INTRO_MS : HINT_MS,
-    );
-    return () => clearTimeout(id);
-  }, [step, hints.length]);
-
-  useEffect(() => {
-    if (step !== -1) return;
-    setCount(0);
-    const delay = 700;
-    const duration = 1200;
-    const start = performance.now();
-    let raf;
-    const tick = (now) => {
-      const p = Math.min(Math.max((now - start - delay) / duration, 0), 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setCount(Math.round(TOTAL_PRODUCTS * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [step]);
-
-  return (
-    <span className={`sp ${hidden ? "sp--hidden" : ""}`} aria-hidden="true">
-      {step === -1 ? (
-        <span className="sp__intro">
-          <span className="sp__word" style={{ animationDelay: "0ms" }}>
-            {t("searchPlaceholder.search")}
-          </span>
-          <span className="sp__word" style={{ animationDelay: "300ms" }}>
-            {t("searchPlaceholder.among")}
-          </span>
-          <span
-            className="sp__word sp__num"
-            style={{ animationDelay: "600ms" }}
-          >
-            <span className="sp__ghost">100&nbsp;000+</span>
-            <span>{count.toLocaleString("ru-RU")}+</span>
-          </span>
-          <span className="sp__word" style={{ animationDelay: "900ms" }}>
-            {t("searchPlaceholder.products")}
-          </span>
-        </span>
-      ) : (
-        <span className="sp__hint" key={step}>
-          {hints[step]}
-        </span>
-      )}
-    </span>
-  );
-}
+const getStoredToken = () =>
+  localStorage.getItem("access_token") ||
+  localStorage.getItem("accessToken") ||
+  localStorage.getItem("accesToken") ||
+  localStorage.getItem("acces_token");
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -128,77 +36,27 @@ export default function Header() {
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isContactsOpen, setIsContactsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  const searchParams = useSearchParams();
-  const urlQuery = searchParams.get("query") || "";
-
-  // Текст в поиске всегда соответствует адресу страницы
-  useEffect(() => {
-    setSearchQuery(urlQuery);
-    setIsSearchOpen(false);
-    setIsMobileSearchOpen(false);
-  }, [pathname, urlQuery]);
-
   const modalRef = useRef(null);
   const langMenuRef = useRef(null);
   const contactsRef = useRef(null);
-  const desktopSearchRef = useRef(null);
   const mobileSearchRef = useRef(null);
+  const mobileToggleRef = useRef(null);
   const { t, i18n } = useTranslation();
   const { data: items = [] } = useCart();
   const { settings, isLoading } = useSiteSettings();
   const queryClient = useQueryClient();
 
+  // При переходе на другую страницу мобильный поиск закрывается
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery.trim());
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
-
-  const normalizeListResponse = (data) => {
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data?.results)) return data.results;
-    return [];
-  };
-
-  const { data: searchProductsData = [], isFetching: isSearchingProducts } =
-    useSearchProductsPool();
-
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
-    queryFn: productApi.getCategories,
-    select: normalizeListResponse,
-  });
-
-  const { data: brands = [] } = useQuery({
-    queryKey: ["brands"],
-    queryFn: productApi.getBrands,
-    select: normalizeListResponse,
-  });
-
-  const categoriesById = useMemo(
-    () => buildCategoryNameMap(categories),
-    [categories],
-  );
-  const brandsById = useMemo(() => buildBrandNameMap(brands), [brands]);
+    setIsMobileSearchOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const userToken =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("accessToken") ||
-        localStorage.getItem("accesToken") ||
-        localStorage.getItem("acces_token");
-      setIsAuth(!!userToken);
-    };
+    const checkAuth = () => setIsAuth(!!getStoredToken());
 
     checkAuth();
     window.addEventListener("storage", checkAuth);
@@ -221,15 +79,12 @@ export default function Header() {
       if (contactsRef.current && !contactsRef.current.contains(event.target)) {
         setIsContactsOpen(false);
       }
-      const isOutsideDesktopSearch =
-        !desktopSearchRef.current ||
-        !desktopSearchRef.current.contains(event.target);
-      const isOutsideMobileSearch =
-        !mobileSearchRef.current ||
-        !mobileSearchRef.current.contains(event.target);
-
-      if (isOutsideDesktopSearch && isOutsideMobileSearch) {
-        setIsSearchOpen(false);
+      // Кнопку-лупу исключаем, иначе панель закроется и сразу откроется снова
+      const isInsideMobileSearch = mobileSearchRef.current?.contains(
+        event.target,
+      );
+      const isOnToggle = mobileToggleRef.current?.contains(event.target);
+      if (!isInsideMobileSearch && !isOnToggle) {
         setIsMobileSearchOpen(false);
       }
     };
@@ -249,26 +104,21 @@ export default function Header() {
   };
 
   const handleCartClick = (event) => {
-    const token =
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("accessToken") ||
-      localStorage.getItem("accesToken") ||
-      localStorage.getItem("acces_token");
-
-    if (!token) {
+    if (!getStoredToken()) {
       event.preventDefault();
       setShowAuthModal(true);
     }
   };
 
+  const currentLangCode = (
+    i18n.resolvedLanguage ||
+    i18n.language ||
+    "ru"
+  ).split("-")[0];
+
   const changeLanguage = async (lng) => {
     if (!lng) return;
-    const normalizedCurrent = (
-      i18n.resolvedLanguage ||
-      i18n.language ||
-      "ru"
-    ).split("-")[0];
-    if (normalizedCurrent === lng) {
+    if (currentLangCode === lng) {
       setIsLangMenuOpen(false);
       return;
     }
@@ -280,17 +130,9 @@ export default function Header() {
   };
 
   const getCurrentLanguage = () => {
-    const lang = (
-      i18n.resolvedLanguage ||
-      i18n.language ||
-      localStorage.getItem("language") ||
-      "ru"
-    ).split("-")[0];
-    switch (lang) {
+    switch (currentLangCode) {
       case "en":
         return "EN";
-      case "ru":
-        return "RU";
       case "ky":
         return "KG";
       default:
@@ -304,64 +146,6 @@ export default function Header() {
     { code: "ky", label: "Кыргызча" },
   ];
 
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    const normalizedQuery = searchQuery.trim();
-    setIsSearchOpen(false);
-    setIsMobileSearchOpen(false);
-
-    if (!normalizedQuery) {
-      router.push("/catalog");
-      return;
-    }
-
-    router.push(`/catalog?query=${encodeURIComponent(normalizedQuery)}`);
-  };
-
-  const flattenCategories = (items, acc = []) => {
-    items.forEach((category) => {
-      if (!category?.name) return;
-      acc.push(category.name);
-      if (
-        Array.isArray(category.subcategories) &&
-        category.subcategories.length > 0
-      ) {
-        flattenCategories(category.subcategories, acc);
-      }
-    });
-    return acc;
-  };
-
-  const normalizedSearch = searchQuery.trim();
-
-  const suggestionProducts = normalizedSearch
-    ? searchProducts(searchProductsData, normalizedSearch, {
-        categoriesById,
-        brandsById,
-      }).slice(0, 6)
-    : [];
-
-  const suggestionCategories = normalizedSearch
-    ? [...new Set(flattenCategories(categories))]
-        .filter((name) => String(name).toLowerCase().includes(normalizedSearch))
-        .slice(0, 4)
-    : [];
-
-  const hasSuggestions =
-    suggestionProducts.length > 0 || suggestionCategories.length > 0;
-
-  const handleProductSelect = (id) => {
-    setIsSearchOpen(false);
-    setIsMobileSearchOpen(false);
-    router.push(`/productdetail/${id}`);
-  };
-
-  const handleCategorySelect = (name) => {
-    setIsSearchOpen(false);
-    setIsMobileSearchOpen(false);
-    router.push(`/catalog?category=${encodeURIComponent(name)}`);
-  };
-
   const getCompanyMapUrl = () => {
     const rawMapUrl = String(settings?.address || "").trim();
     if (rawMapUrl.startsWith("http://") || rawMapUrl.startsWith("https://")) {
@@ -371,54 +155,6 @@ export default function Header() {
     const addressText = t("footer.address.street");
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressText)}`;
   };
-
-  const renderSearchDropdown = () => (
-    <div className="header__search-dropdown">
-      {isSearchingProducts ? (
-        <div className="search-empty">Поиск...</div>
-      ) : hasSuggestions ? (
-        <>
-          {suggestionProducts.length > 0 && (
-            <div className="search-section">
-              <p className="search-section__title">Товары</p>
-              {suggestionProducts.map((product) => (
-                <button
-                  key={product.id}
-                  type="button"
-                  className="search-item"
-                  onClick={() => handleProductSelect(product.id)}
-                >
-                  <span className="search-item__main">{product.name}</span>
-                  <span className="search-item__meta">
-                    Артикул: {product.article || "-"}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {suggestionCategories.length > 0 && (
-            <div className="search-section">
-              <p className="search-section__title">Категории</p>
-              {suggestionCategories.map((categoryName) => (
-                <button
-                  key={categoryName}
-                  type="button"
-                  className="search-item search-item--category"
-                  onClick={() => handleCategorySelect(categoryName)}
-                >
-                  <span className="search-item__main">{categoryName}</span>
-                  <span className="search-item__meta">Перейти в каталог</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="search-empty">Ничего не найдено</div>
-      )}
-    </div>
-  );
 
   return (
     <header className="header">
@@ -530,97 +266,16 @@ export default function Header() {
           </div>
         </div>
 
-        <form
-          className="header__search header__search--desktop"
-          onSubmit={handleSearchSubmit}
-          ref={desktopSearchRef}
-        >
-          <input
-            type="text"
-            placeholder=""
-            aria-label={t("header.search")}
-            value={searchQuery}
-            onChange={(event) => {
-              setSearchQuery(event.target.value);
-              setIsSearchOpen(true);
-            }}
-            onFocus={() => {
-              if (searchQuery.trim()) setIsSearchOpen(true);
-            }}
-          />
-          <AnimatedSearchPlaceholder hidden={!!searchQuery} />
-          <button
-            type="submit"
-            className="header__search-btn"
-            aria-label={t("header.search")}
-          >
-            <FiSearch className="icon" />
-          </button>
-
-          {isSearchOpen && searchQuery.trim() && (
-            <div className="header__search-dropdown">
-              {isSearchingProducts ? (
-                <div className="search-empty">Поиск...</div>
-              ) : hasSuggestions ? (
-                <>
-                  {suggestionProducts.length > 0 && (
-                    <div className="search-section">
-                      <p className="search-section__title">Товары</p>
-                      {suggestionProducts.map((product) => (
-                        <button
-                          key={product.id}
-                          type="button"
-                          className="search-item"
-                          onClick={() => handleProductSelect(product.id)}
-                        >
-                          <span className="search-item__main">
-                            {product.name}
-                          </span>
-                          <span className="search-item__meta">
-                            Артикул: {product.article || "-"}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {suggestionCategories.length > 0 && (
-                    <div className="search-section">
-                      <p className="search-section__title">Категории</p>
-                      {suggestionCategories.map((categoryName) => (
-                        <button
-                          key={categoryName}
-                          type="button"
-                          className="search-item search-item--category"
-                          onClick={() => handleCategorySelect(categoryName)}
-                        >
-                          <span className="search-item__main">
-                            {categoryName}
-                          </span>
-                          <span className="search-item__meta">
-                            Перейти в каталог
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="search-empty">Ничего не найдено</div>
-              )}
-            </div>
-          )}
-        </form>
+        <SearchBox variant="desktop" />
 
         <div className="header__icons">
           <button
+            ref={mobileToggleRef}
             type="button"
             className="mobile-search-toggle"
             aria-label={t("header.search")}
-            onClick={() => {
-              setIsSearchOpen(false);
-              setIsMobileSearchOpen((prev) => !prev);
-            }}
+            aria-expanded={isMobileSearchOpen}
+            onClick={() => setIsMobileSearchOpen((prev) => !prev)}
           >
             <FiSearch />
           </button>
@@ -645,18 +300,10 @@ export default function Header() {
                     key={lang.code}
                     type="button"
                     onClick={() => changeLanguage(lang.code)}
-                    className={
-                      (i18n.resolvedLanguage || i18n.language || "ru").split(
-                        "-",
-                      )[0] === lang.code
-                        ? "active"
-                        : ""
-                    }
+                    className={currentLangCode === lang.code ? "active" : ""}
                   >
                     <span>{lang.label}</span>
-                    {(i18n.resolvedLanguage || i18n.language || "ru").split(
-                      "-",
-                    )[0] === lang.code && (
+                    {currentLangCode === lang.code && (
                       <svg
                         width="16"
                         height="16"
@@ -712,34 +359,11 @@ export default function Header() {
 
       {isMobileSearchOpen && (
         <div className="mobile-search-panel" ref={mobileSearchRef}>
-          <form
-            className="header__search header__search--mobile"
-            onSubmit={handleSearchSubmit}
-          >
-            <input
-              type="text"
-              placeholder=""
-              aria-label={t("header.search")}
-              value={searchQuery}
-              onChange={(event) => {
-                setSearchQuery(event.target.value);
-                setIsSearchOpen(true);
-              }}
-              onFocus={() => {
-                if (searchQuery.trim()) setIsSearchOpen(true);
-              }}
-              autoFocus
-            />
-            <AnimatedSearchPlaceholder hidden={!!searchQuery} />
-            <button
-              type="submit"
-              className="header__search-btn"
-              aria-label={t("header.search")}
-            >
-              <FiSearch className="icon" />
-            </button>
-            {isSearchOpen && searchQuery.trim() && renderSearchDropdown()}
-          </form>
+          <SearchBox
+            variant="mobile"
+            autoFocus
+            onDone={() => setIsMobileSearchOpen(false)}
+          />
         </div>
       )}
 
