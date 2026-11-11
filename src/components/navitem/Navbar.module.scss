@@ -1,3 +1,4 @@
+@use "sass:color";
 // Переменные
 $bg-color: #f8f9fa;
 $card-bg: #ffffff;
@@ -83,7 +84,7 @@ $active-text: #ffffff;
   }
 
   &:hover {
-    border-color: $active-bg;
+    background-color: color.adjust($active-bg, $lightness: -5%);
     background-color: darken($active-bg, 5%);
   }
 }
@@ -110,7 +111,7 @@ $active-text: #ffffff;
   }
 
   &:hover {
-    border-color: $active-bg;
+    background-color: color.adjust($active-bg, $lightness: -5%);
     background-color: darken($active-bg, 5%);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
