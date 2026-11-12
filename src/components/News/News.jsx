@@ -87,7 +87,10 @@ export function News() {
             autoplay={
               shouldLoop ? { delay: 3000, stopOnInteraction: false } : false
             }
-            navigation
+            navigation={{
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
+            }}
             onBeforeInit={(swiper) => {
               swiper.params.navigation.prevEl = prevRef.current;
               swiper.params.navigation.nextEl = nextRef.current;

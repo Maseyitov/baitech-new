@@ -885,6 +885,17 @@ export default function CatalogPage() {
     enabled: Boolean(query),
   });
 
+  // В поиске фото приходит в поле `image`, а карточки ждут `existing_images`
+  const normalizedSearchProducts = useMemo(
+    () =>
+      allSearchProducts.map((p) =>
+        p.existing_images?.length || !p.image
+          ? p
+          : { ...p, existing_images: [{ image: p.image }] },
+      ),
+    [allSearchProducts],
+  );
+
   const prevFiltersRef = useRef({ cat, bnd, query });
   useEffect(() => {
     const prev = prevFiltersRef.current;
@@ -897,8 +908,11 @@ export default function CatalogPage() {
 
   const searchedProducts = useMemo(
     () =>
-      searchProducts(allSearchProducts, query, { categoriesById, brandsById }),
-    [allSearchProducts, query, categoriesById, brandsById],
+      searchProducts(normalizedSearchProducts, query, {
+        categoriesById,
+        brandsById,
+      }),
+    [normalizedSearchProducts, query, categoriesById, brandsById],
   );
   const paginatedSearchProducts = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;

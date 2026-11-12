@@ -85,7 +85,6 @@ footer {
   margin-top: 1px;
 }
 
-
 /* === SOCIALS (ОНДОЛГОН) === */
 .footer__socials {
   display: flex;
@@ -119,6 +118,34 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.footer__social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important; // чтобы старый фон не перекрывал цвета
+  color: inherit;
+}
+
+.brand-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+
+  &--whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #25d366;
+    color: #fff;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 }
 
 .footer__social-icon svg {
@@ -367,4 +394,64 @@ footer {
   .footer__bottom {
     padding: 20px 20px;
   }
+}
+/* ===== Соцсети: фирменные иконки и цвета ===== */
+/* Вставь этот блок в САМЫЙ КОНЕЦ style.scss */
+
+.footer__social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+}
+
+.brand-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+
+  &--whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: #25d366 !important;
+
+    svg {
+      width: 19px !important;
+      height: 19px !important;
+      color: #fff !important;
+      fill: #fff !important;
+    }
+  }
+}
+
+/* Фирменные цвета текстов */
+.footer__social--whatsapp .footer__social-text {
+  color: #25d366 !important;
+}
+
+.footer__social--instagram .footer__social-text {
+  background: linear-gradient(
+    45deg,
+    #feda75,
+    #fa7e1e,
+    #d62976,
+    #962fbf,
+    #4f5bd5
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent !important;
+}
+
+.footer__social--youtube .footer__social-text {
+  color: #ff3d3d !important;
+}
+
+/* Ховер: только лёгкое увеличение иконки */
+.footer__social:hover .brand-icon {
+  transform: scale(1.1);
 }

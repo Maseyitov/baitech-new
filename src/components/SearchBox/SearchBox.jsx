@@ -26,11 +26,13 @@ import styles from "./SearchBox.module.scss";
 // ─── Настройки ───────────────────────────────────────────────────────────────
 
 const DEBOUNCE_MS = 120; // поиск локальный, поэтому задержка маленькая
-const MAX_PRODUCTS = 6;
+const INITIAL_PRODUCTS = 30; // сколько товаров показать сразу
+const LOAD_MORE_STEP = 20; // сколько добавлять по кнопке «Показать ещё»
 const MAX_COMPLETIONS = 4;
 const MAX_CATEGORIES = 3;
 const HISTORY_KEY = "searchHistory";
 const HISTORY_LIMIT = 8;
+const HIGH_PRICE_LIMIT = 100000; // как в карточках: от этой цены — «Свяжитесь с нами»
 
 const TOTAL_PRODUCTS = 100000;
 const INTRO_MS = 3600;
@@ -112,10 +114,23 @@ const writeHistory = (list) => {
   } catch {}
 };
 
-const formatPrice = (price, currency) => {
-  const num = Number(price);
-  if (!Number.isFinite(num) || num <= 0) return null;
-  return `${num.toLocaleString("ru-RU")} ${currency}`;
+const formatNumber = (num) => Math.round(num).toLocaleString("ru-RU");
+
+// Что показать вместо цены: обычную цену, цену со скидкой или «Свяжитесь с нами»
+const getPriceInfo = (product) => {
+  const price = Number(product.price);
+  if (!Number.isFinite(price) || price <= 0) return null;
+  if (price >= HIGH_PRICE_LIMIT) return { type: "contact" };
+
+  const discount = Number(product.discount) || 0;
+  if (discount > 0 && discount < 100) {
+    return {
+      type: "discount",
+      old: price,
+      current: (price * (100 - discount)) / 100,
+    };
+  }
+  return { type: "regular", current: price };
 };
 
 // ─── Мелкие компоненты ──────────────────────────────────────────────────────
@@ -145,12 +160,12 @@ function Completion({ text, query }) {
   if (q && text.startsWith(q)) {
     return (
       <>
-        {text.slice(0, q.length)}
-        <strong>{text.slice(q.length)}</strong>
+        <strong>{text.slice(0, q.length)}</strong>
+        {text.slice(q.length)}
       </>
     );
   }
-  return <strong>{text}</strong>;
+  return text;
 }
 
 function AnimatedSearchPlaceholder({ hidden }) {
@@ -243,6 +258,7 @@ export default function SearchBox({
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [history, setHistory] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PRODUCTS);
 
   // ── Данные ──
   const { data: pool = [], isLoading: isPoolLoading } = useSearchProductsPool();
@@ -337,8 +353,9 @@ export default function SearchBox({
   }, [pool, debouncedQuery, searchOptions]);
 
   const effectiveQuery = search?.correctedQuery || debouncedQuery;
-  const products = search ? search.results.slice(0, MAX_PRODUCTS) : [];
+  const products = search ? search.results.slice(0, visibleCount) : [];
   const totalFound = search ? search.results.length : 0;
+  const hasMore = products.length < totalFound;
 
   const completions = useMemo(() => {
     if (!debouncedQuery || pool.length === 0) return [];
@@ -439,14 +456,6 @@ export default function SearchBox({
         onSelect: () => goToResults(text),
       }),
     );
-    products.forEach((product) =>
-      list.push({
-        type: "product",
-        key: `pr-${product.id}`,
-        product,
-        onSelect: () => goToProduct(product),
-      }),
-    );
     categoryMatches.forEach((category) =>
       list.push({
         type: "category",
@@ -455,14 +464,14 @@ export default function SearchBox({
         onSelect: () => goToCategory(category.name),
       }),
     );
-    if (totalFound > products.length) {
+    products.forEach((product) =>
       list.push({
-        type: "all",
-        key: "all",
-        text: effectiveQuery,
-        onSelect: () => goToResults(effectiveQuery),
-      });
-    }
+        type: "product",
+        key: `pr-${product.id}`,
+        product,
+        onSelect: () => goToProduct(product),
+      }),
+    );
     return list;
   }, [
     hasQuery,
@@ -470,16 +479,15 @@ export default function SearchBox({
     completions,
     products,
     categoryMatches,
-    totalFound,
-    effectiveQuery,
     goToResults,
     goToProduct,
     goToCategory,
   ]);
 
-  // Новый запрос — сбрасываем выделение
+  // Новый запрос — сбрасываем выделение и снова показываем первые 30 товаров
   useEffect(() => {
     setActiveIndex(-1);
+    setVisibleCount(INITIAL_PRODUCTS);
   }, [debouncedQuery]);
 
   // Выделенный пункт всегда виден при прокрутке
@@ -525,6 +533,12 @@ export default function SearchBox({
     goToResults(query);
   };
 
+  // «Показать ещё» — добавляем товары в этом же окне, без перехода
+  const handleLoadMore = () => {
+    setVisibleCount((count) => count + LOAD_MORE_STEP);
+    inputRef.current?.focus();
+  };
+
   const handleClear = () => {
     setQuery("");
     setDebouncedQuery("");
@@ -533,16 +547,41 @@ export default function SearchBox({
   };
 
   // ── Рендер пунктов ──
-  const optionProps = (index) => ({
+  const optionProps = (index, extraClass = "") => ({
     id: `${listId}-${index}`,
     role: "option",
     "aria-selected": index === activeIndex,
-    className: `${styles.item} ${index === activeIndex ? styles.itemActive : ""}`,
+    className: `${styles.item} ${extraClass} ${index === activeIndex ? styles.itemActive : ""}`,
     onMouseEnter: () => setActiveIndex(index),
     // mousedown вместо click — чтобы поле не теряло фокус до выбора
     onMouseDown: (e) => e.preventDefault(),
     onClick: () => items[index].onSelect(),
   });
+
+  const renderPrice = (product) => {
+    const info = getPriceInfo(product);
+    if (!info) return null;
+    const currency = t("search.currency");
+
+    if (info.type === "contact") {
+      return (
+        <span className={styles.priceContact}>{t("card.contactForPrice")}</span>
+      );
+    }
+
+    return (
+      <span className={styles.priceRow}>
+        {info.type === "discount" && (
+          <span className={styles.priceOld}>
+            {formatNumber(info.old)} {currency}
+          </span>
+        )}
+        <span className={styles.priceCurrent}>
+          {formatNumber(info.current)} {currency}
+        </span>
+      </span>
+    );
+  };
 
   const renderItem = (item, index) => {
     switch (item.type) {
@@ -576,8 +615,7 @@ export default function SearchBox({
 
       case "completion":
         return (
-          <li key={item.key} {...optionProps(index)}>
-            <FiSearch className={styles.icon} aria-hidden="true" />
+          <li key={item.key} {...optionProps(index, styles.completionItem)}>
             <span className={styles.text}>
               <Completion text={item.text} query={debouncedQuery} />
             </span>
@@ -586,10 +624,9 @@ export default function SearchBox({
 
       case "product": {
         const { product } = item;
-        const price = formatPrice(product.price, t("search.currency"));
         const brand = brandsById[product.brand];
         return (
-          <li key={item.key} {...optionProps(index)}>
+          <li key={item.key} {...optionProps(index, styles.productItem)}>
             <span className={styles.thumb}>
               {product.image ? (
                 <img src={product.image} alt="" loading="lazy" />
@@ -601,17 +638,17 @@ export default function SearchBox({
               <span className={styles.productName}>
                 <Highlight text={product.name || ""} query={effectiveQuery} />
               </span>
+              {renderPrice(product)}
               <span className={styles.productMeta}>
-                {brand && <span>{brand}</span>}
                 {product.article && (
                   <span>
-                    {t("search.article")}{" "}
                     <Highlight
                       text={String(product.article)}
                       query={effectiveQuery}
                     />
                   </span>
                 )}
+                {brand && <span>{brand}</span>}
                 {product.is_available === false && (
                   <span className={styles.unavailable}>
                     {t("search.unavailable")}
@@ -619,7 +656,6 @@ export default function SearchBox({
                 )}
               </span>
             </span>
-            {price && <span className={styles.price}>{price}</span>}
           </li>
         );
       }
@@ -634,19 +670,6 @@ export default function SearchBox({
             <span className={styles.hint}>{t("search.categoryLabel")}</span>
           </li>
         );
-
-      case "all": {
-        const props = optionProps(index);
-        return (
-          <li
-            key={item.key}
-            {...props}
-            className={`${props.className} ${styles.allResults}`}
-          >
-            {t("search.showAll", { count: totalFound })}
-          </li>
-        );
-      }
 
       default:
         return null;
@@ -666,9 +689,7 @@ export default function SearchBox({
               ? "products"
               : item.type === "category"
                 ? "categories"
-                : item.type === "all"
-                  ? "all"
-                  : "completions";
+                : "completions";
       const last = groups[groups.length - 1];
       if (last && last.key === groupKey) last.entries.push([item, index]);
       else groups.push({ key: groupKey, entries: [[item, index]] });
@@ -689,8 +710,21 @@ export default function SearchBox({
         </div>
       ),
       popular: <div className={styles.sectionHead}>{t("search.popular")}</div>,
+      completions: (
+        <div className={styles.sectionHead}>
+          {t("search.similar", "Похожие запросы")}
+        </div>
+      ),
       products: (
-        <div className={styles.sectionHead}>{t("search.products")}</div>
+        <div className={styles.sectionHead}>
+          <span>{t("search.products")}</span>
+          <span className={styles.sectionCount}>
+            {t("search.productsCount", {
+              count: totalFound,
+              defaultValue: "{{count}} товара(ов)",
+            })}
+          </span>
+        </div>
       ),
       categories: (
         <div className={styles.sectionHead}>{t("search.categories")}</div>
@@ -717,6 +751,7 @@ export default function SearchBox({
     products.length === 0 &&
     completions.length === 0 &&
     categoryMatches.length === 0;
+  const showViewAll = hasQuery && totalFound > 0;
 
   return (
     <form
@@ -776,37 +811,66 @@ export default function SearchBox({
           id={listId}
           role="listbox"
         >
-          {hasQuery && isPoolLoading && (
-            <div className={styles.status}>{t("search.loading")}</div>
-          )}
+          <div className={styles.scroll}>
+            {hasQuery && isPoolLoading && (
+              <div className={styles.status}>{t("search.loading")}</div>
+            )}
 
-          {search?.correction && (
-            <div className={styles.correction}>
-              {search.correction === "layout"
-                ? t("search.wrongLayout")
-                : t("search.showingFor")}{" "}
+            {search?.correction && (
+              <div className={styles.correction}>
+                {search.correction === "layout"
+                  ? t("search.wrongLayout")
+                  : t("search.showingFor")}{" "}
+                <button
+                  type="button"
+                  className={styles.correctionLink}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    setQuery(search.correctedQuery);
+                    inputRef.current?.focus();
+                  }}
+                >
+                  {search.correctedQuery}
+                </button>
+              </div>
+            )}
+
+            {renderSections()}
+
+            {nothingFound && (
+              <div className={styles.empty}>
+                <p className={styles.emptyTitle}>
+                  {t("search.nothingFound", { query: debouncedQuery })}
+                </p>
+                <p className={styles.emptyText}>
+                  {t("search.nothingFoundHint")}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Кнопки внизу окна — всегда видны, не прокручиваются со списком */}
+          {showViewAll && (
+            <div className={styles.footer}>
               <button
                 type="button"
-                className={styles.correctionLink}
+                className={styles.viewAll}
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  setQuery(search.correctedQuery);
-                  inputRef.current?.focus();
-                }}
+                onClick={() => goToResults(effectiveQuery)}
               >
-                {search.correctedQuery}
+                {t("search.viewAll", "Посмотреть все")}
               </button>
-            </div>
-          )}
 
-          {renderSections()}
-
-          {nothingFound && (
-            <div className={styles.empty}>
-              <p className={styles.emptyTitle}>
-                {t("search.nothingFound", { query: debouncedQuery })}
-              </p>
-              <p className={styles.emptyText}>{t("search.nothingFoundHint")}</p>
+              {hasMore && (
+                <button
+                  type="button"
+                  className={styles.loadMore}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={handleLoadMore}
+                >
+                  {t("search.loadMore", "Показать ещё")}
+                </button>
+              )}
             </div>
           )}
         </div>

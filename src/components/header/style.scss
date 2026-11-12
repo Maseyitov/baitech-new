@@ -104,10 +104,27 @@
     }
   }
 
+  // Лого никогда не сжимается и не пропадает
   .header__logo {
     display: flex;
     align-items: center;
     gap: 40px;
+    flex-shrink: 0;
+
+    > div,
+    a {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    @media (max-width: 1200px) {
+      gap: 20px;
+    }
+
+    @media (max-width: 992px) {
+      gap: 14px;
+    }
 
     .header__logo-image {
       width: 200px;
@@ -121,6 +138,8 @@
     img {
       margin-left: -4px;
       object-fit: contain;
+      max-width: none; // Tailwind ставит img { max-width: 100% } — из-за этого лого сжималось до 0
+      flex-shrink: 0;
 
       @media (max-width: 1200px) {
       }
@@ -134,6 +153,7 @@
 
     @media (max-width: 768px) {
       width: 110px;
+      min-width: 110px;
       height: 44px;
     }
   }
@@ -191,13 +211,8 @@
       background: #f5f7fa;
     }
 
-    @media (max-width: 1200px) {
-      margin-left: 40px;
-    }
-
     @media (max-width: 992px) {
-      margin-left: 20px;
-      width: 110px;
+      width: 100px;
       font-size: 12px;
     }
 
@@ -340,27 +355,24 @@
     }
   }
 
+  // Поле поиска растягивается на свободное место, максимум 550px
   .header__search {
-    width: 300px;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 550px;
+    min-width: 0;
     height: 44px;
+    margin: 0 24px;
     position: relative;
     display: flex;
     align-items: center;
 
     @media (max-width: 1200px) {
-      margin-left: 100px;
-      max-width: 300px;
-    }
-
-    @media (max-width: 992px) {
-      margin-left: 40px;
-      max-width: 250px;
+      margin: 0 16px;
     }
 
     @media (max-width: 768px) {
-      margin-left: 0;
-      margin-right: 0;
-      flex: 1;
+      margin: 0;
       max-width: none;
       height: 38px;
     }
@@ -370,7 +382,7 @@
       height: 100%;
       padding: 0 38px 0 14px;
       border: 1px solid #1b263b;
-      border-radius: 6px;
+      border-radius: 10px;
       font-size: 16px;
       color: #111827;
       background-color: #f5f7fa;
@@ -389,41 +401,49 @@
       }
     }
 
+    // ── Кнопка-лупа ──
+    // Раньше иконка была position: absolute, и кнопка сжималась до 0×0,
+    // поэтому клик проходил в поле ввода. Теперь у кнопки есть размер,
+    // а иконка лежит внутри неё — клик отправляет форму, как Enter.
     .header__search-btn {
       position: absolute;
       top: 50%;
-      right: 10px;
+      right: 6px;
       transform: translateY(-50%);
+      z-index: 2;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       border: none;
+      border-radius: 6px;
       background: transparent;
       padding: 0;
       color: #000;
       cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #e6e8ec;
+      }
 
       @media (max-width: 768px) {
-        right: 8px;
+        right: 4px;
+        width: 28px;
+        height: 28px;
       }
     }
 
     .icon {
-      position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translateY(-50%);
+      position: static;
+      transform: none;
       font-size: 17px;
       color: currentColor;
       pointer-events: none;
 
-      @media (max-width: 1200px) {
-        right: 0;
-      }
-
       @media (max-width: 768px) {
         font-size: 16px;
-        right: 0;
       }
     }
   }
@@ -441,19 +461,28 @@
     height: 44px;
   }
 
+  // Окно подсказок: шире поля, прокрутка внутри (.scroll в SearchBox.module.scss),
+  // кнопка «Посмотреть все» прижата к низу
   .header__search-dropdown {
     position: absolute;
     top: calc(100% + 6px);
+    // Ровно по ширине поля поиска (поле теперь само широкое)
     left: 0;
     width: 100%;
-    max-height: 340px;
-    overflow-y: auto;
+    min-width: 420px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    border: 1px solid #d5dae1;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
     z-index: 1200;
-    padding: 8px;
+    padding: 6px 0 0;
+
+    @media (max-width: 768px) {
+      min-width: 0;
+    }
   }
 
   .search-section {
@@ -515,7 +544,8 @@
   .header__icons {
     display: flex;
     align-items: center;
-    gap: 50px;
+    flex-shrink: 0;
+    gap: 36px;
     font-size: 22px;
     color: #111827;
 
@@ -531,17 +561,14 @@
     }
 
     @media (max-width: 1200px) {
-      margin-left: 40px;
-      gap: 30px;
+      gap: 26px;
     }
 
     @media (max-width: 992px) {
-      margin-left: 20px;
-      gap: 20px;
+      gap: 18px;
     }
 
     @media (max-width: 768px) {
-      margin-left: 0;
       gap: 12px;
       font-size: 20px;
       flex-shrink: 0;

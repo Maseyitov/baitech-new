@@ -161,9 +161,9 @@ export default function Header() {
       <div className="header__container">
         <div className="header__logo">
           <div>
-            <Link href="/">
-              <Image src={logo} alt="Байтех" width={150} height={50} />
-            </Link>
+            <a href="/" aria-label="Байтех — на главную">
+              <Image src={logo} alt="Байтех" width={150} height={50} priority />
+            </a>
           </div>
 
           <div className="contacts-wrapper" ref={contactsRef}>

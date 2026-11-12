@@ -22,21 +22,30 @@
   "search": {
     "recent": "Недавние запросы",
     "clearHistory": "Очистить",
-    "popular": "Часто ищут",
-    "products": "Товары",
+    "removeFromHistory": "Удалить «{{text}}» из истории",
+    "popular": "Популярные запросы",
+    "similar": "Похожие запросы",
     "categories": "Категории",
-    "categoryLabel": "категория",
-    "showAll": "Показать все результаты ({{count}})",
-    "loading": "Загружаем товары…",
-    "showingFor": "Показаны результаты для запроса:",
-    "wrongLayout": "Похоже, не та раскладка. Показаны результаты для запроса:",
-    "nothingFound": "По запросу «{{query}}» ничего не нашлось",
-    "nothingFoundHint": "Проверьте написание или поищите по артикулу или бренду.",
-    "article": "арт.",
-    "unavailable": "нет в наличии",
+    "categoryLabel": "Категория",
+    "products": "Товары",
+    "productsCount_one": "{{count}} товар",
+    "productsCount_few": "{{count}} товара",
+    "productsCount_many": "{{count}} товаров",
+    "productsCount_other": "{{count}} товара",
+    "article": "Арт.",
     "currency": "сом",
-    "clearInput": "Очистить поле поиска",
-    "removeFromHistory": "Удалить «{{text}}» из истории"
+    "unavailable": "Нет в наличии",
+    "loading": "Загрузка...",
+    "wrongLayout": "Неверная раскладка? Ищем:",
+    "showingFor": "Показаны результаты для",
+    "nothingFound": "По запросу «{{query}}» ничего не найдено",
+    "nothingFoundHint": "Попробуйте написать по-другому или поищите по артикулу",
+    "clearInput": "Очистить поле",
+    "viewAll": "Посмотреть все",
+    "loadMore": "Показать ещё"
+  },
+  "card": {
+    "contactForPrice": "Свяжитесь с нами насчёт цены"
   },
 
   "navbar": {
