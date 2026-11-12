@@ -1,98 +1,126 @@
-// Цвета взяты из вашего каталога (#005bff), чтобы поиск выглядел частью сайта
-$accent: #005bff;
-$accent-soft: #f0f5ff;
-$text: #1f2328;
-$muted: #6b7280;
-$line: #eceef2;
+// ===== Поле поиска =====
 
 .root {
   position: relative;
 }
 
-// ── Кнопка очистки поля ──
-// Если крестик встаёт не на место, поменяйте right под ширину вашей кнопки поиска
+// Крестик «очистить» — слева от лупы
 .clear {
   position: absolute;
   top: 50%;
-  right: 52px;
+  right: 38px;
   transform: translateY(-50%);
   z-index: 2;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: $muted;
-  font-size: 18px;
+  color: #4b5563;
+  font-size: 16px;
   cursor: pointer;
+  padding: 0;
 
   &:hover {
-    background: #f2f3f5;
-    color: $text;
+    background: #e6e8ec;
   }
 
-  &:focus-visible {
-    outline: 2px solid $accent;
-    outline-offset: 1px;
+  @media (max-width: 768px) {
+    right: 34px;
   }
 }
 
-// ── Выпадающее окно ──
-// Положение (top/left/width) берётся из вашего .header__search-dropdown
+.mark {
+  background: transparent;
+  color: inherit;
+  font-weight: 700;
+}
+
+// ===== Выпадающее окно =====
+
 .dropdown {
-  max-height: min(70vh, 560px);
+  display: flex;
+  flex-direction: column;
+}
+
+// Прокручиваемая часть (кнопка «Посмотреть все» остаётся снизу)
+.scroll {
+  max-height: min(720px, calc(100vh - 180px));
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 6px 0;
-  background: #fff;
-  border: 1px solid $line;
-  border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(17, 24, 39, 0.12);
-  text-align: left;
 
-  @media (prefers-reduced-motion: no-preference) {
-    animation: dropdownIn 0.12s ease-out;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #b8bec8;
+    border-radius: 3px;
+  }
+
+  @media (max-width: 768px) {
+    max-height: 60vh;
   }
 }
 
-@keyframes dropdownIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+.status,
+.correction {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #64748b;
 }
+
+.correctionLink {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+// ===== Секции =====
 
 .section + .section {
   margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px solid $line;
 }
 
+// Серая полоса с заголовком: «ПОХОЖИЕ ЗАПРОСЫ», «ТОВАРЫ 16 товара(ов)»
 .sectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px 4px;
-  font-size: 12px;
+  gap: 8px;
+  margin: 4px 8px;
+  padding: 6px 10px;
+  background: #eceef1;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sectionCount {
   font-weight: 500;
-  color: $muted;
+  text-transform: none;
+  color: #6b7280;
 }
 
 .clearHistory {
-  padding: 2px 4px;
   border: none;
   background: none;
-  font-size: 12px;
-  color: $accent;
+  padding: 0;
+  font-size: 11px;
+  color: #1d4ed8;
   cursor: pointer;
+  text-transform: none;
 
   &:hover {
     text-decoration: underline;
@@ -100,32 +128,34 @@ $line: #eceef2;
 }
 
 .list {
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
-// ── Строка ──
+// ===== Пункты =====
+
 .item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 40px;
-  padding: 6px 16px;
-  font-size: 14px;
-  line-height: 1.35;
-  color: $text;
+  gap: 10px;
+  margin: 0 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 13px;
+  color: #111827;
+  transition: background-color 0.12s;
 }
 
 .itemActive {
-  background: $accent-soft;
+  background: #f1f5f9;
 }
 
 .icon {
   flex-shrink: 0;
-  font-size: 16px;
-  color: $muted;
+  font-size: 15px;
+  color: #9ca3af;
 }
 
 .text {
@@ -134,16 +164,12 @@ $line: #eceef2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  strong {
-    font-weight: 600;
-  }
 }
 
 .hint {
   flex-shrink: 0;
-  font-size: 12px;
-  color: $muted;
+  font-size: 11px;
+  color: #9ca3af;
 }
 
 .remove {
@@ -151,46 +177,45 @@ $line: #eceef2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  padding: 0;
+  width: 22px;
+  height: 22px;
   border: none;
   border-radius: 50%;
-  background: none;
-  color: $muted;
+  background: transparent;
+  color: #9ca3af;
   cursor: pointer;
-  opacity: 0;
-
-  .item:hover &,
-  .itemActive &,
-  &:focus-visible {
-    opacity: 1;
-  }
+  padding: 0;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
-    color: $text;
-  }
-
-  // На телефонах нет наведения — крестик виден всегда
-  @media (hover: none) {
-    opacity: 1;
+    background: #e5e7eb;
+    color: #374151;
   }
 }
 
-// ── Товар ──
+// Похожие запросы — компактные строки без иконки
+.completionItem {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #374151;
+}
+
+// ===== Товар =====
+
+.productItem {
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
 .thumb {
   flex-shrink: 0;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid $line;
-  border-radius: 8px;
-  background: #fff;
-  color: #c5cad3;
-  overflow: hidden;
+  color: #cbd5e1;
+  font-size: 18px;
 
   img {
     width: 100%;
@@ -204,99 +229,121 @@ $line: #eceef2;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
+// Название — до 2 строк, полностью видно, как на первом скрине
 .productName {
+  font-size: 13px;
+  line-height: 1.35;
+  color: #111827;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
+  word-break: break-word;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.priceOld {
+  font-size: 12px;
+  color: #111827;
+  text-decoration: line-through;
+}
+
+.priceCurrent {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.priceContact {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e53935;
 }
 
 .productMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 10px;
-  font-size: 12px;
-  color: $muted;
+  gap: 8px;
+  font-size: 11px;
+  color: #374151;
 }
 
 .unavailable {
-  color: #b42318;
+  color: #e53935;
 }
 
-.price {
-  flex-shrink: 0;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-// Найденные слова — жирным, как в Google, без жёлтого фона
-.mark {
-  background: none;
-  color: inherit;
-  font-weight: 600;
-}
-
-.allResults {
-  justify-content: center;
-  font-weight: 500;
-  color: $accent;
-}
-
-// ── Исправление запроса ──
-.correction {
-  padding: 8px 16px 10px;
-  font-size: 13px;
-  color: $muted;
-  border-bottom: 1px solid $line;
-}
-
-.correctionLink {
-  padding: 0;
-  border: none;
-  background: none;
-  font: inherit;
-  font-weight: 600;
-  color: $accent;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-// ── Состояния ──
-.status {
-  padding: 14px 16px;
-  font-size: 14px;
-  color: $muted;
-}
+// ===== Ничего не найдено =====
 
 .empty {
-  padding: 16px;
+  padding: 16px 14px;
 }
 
 .emptyTitle {
   margin: 0 0 4px;
   font-size: 14px;
-  font-weight: 500;
-  color: $text;
+  font-weight: 600;
+  color: #111827;
 }
 
 .emptyText {
   margin: 0;
   font-size: 13px;
-  color: $muted;
+  color: #6b7280;
 }
 
-@media (max-width: 600px) {
-  .item {
-    padding: 8px 12px;
-  }
+// ===== Кнопка «Посмотреть все» =====
 
-  .price {
-    font-size: 13px;
+.footer {
+  flex-shrink: 0;
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.viewAll,
+.loadMore {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+
+  &:hover {
+    background: #0e2e5b;
+    border-color: #0e2e5b;
+    color: #fff;
+  }
+}
+
+// «Показать ещё» — тёмная кнопка справа
+.loadMore {
+  border-color: #1f2937;
+  background: #1f2937;
+  color: #fff;
+
+  &:hover {
+    background: #0e2e5b;
+    border-color: #0e2e5b;
+    color: #fff;
   }
 }

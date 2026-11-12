@@ -1,0 +1,78 @@
+.bt-course {
+  /* ===== Программа =====
+     Каждый модуль — отдельная карточка. Открытый модуль выделен зелёной рамкой. */
+  .mods { list-style: none; margin: 0 auto; padding: 0; max-width: 980px; display: grid; gap: 12px; }
+  .mod {
+    position: relative; isolation: isolate; background: var(--surface); border: 1px solid var(--card-border); border-radius: 22px; box-shadow: var(--card-shadow);
+    transition: border-color .35s, box-shadow .35s;
+  }
+  .mod:hover { border-color: color-mix(in srgb, var(--brand) 40%, transparent); }
+  .mod.open { border-color: color-mix(in srgb, var(--brand) 55%, transparent); box-shadow: var(--card-shadow-hover); }
+  .mod-h {
+    position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 26px; align-items: center;
+    width: 100%; padding: 24px 26px; background: none; border: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; border-radius: 22px;
+  }
+  .mod-n {
+    font-family: var(--f-display); font-size: clamp(32px, 4vw, 46px); font-weight: 700; letter-spacing: -.04em; line-height: 1; width: 72px;
+    color: transparent; -webkit-text-stroke: 1.5px color-mix(in srgb, var(--muted) 70%, transparent);
+    background: linear-gradient(90deg, var(--brand), var(--blue)); -webkit-background-clip: text; background-clip: text;
+    background-size: 0% 100%; background-repeat: no-repeat;
+    transition: background-size .5s cubic-bezier(.2,.8,.2,1), -webkit-text-stroke-color .3s;
+  }
+  .mod-h:hover .mod-n, .mod.open .mod-n { background-size: 100% 100%; -webkit-text-stroke-color: transparent; }
+  .mod-t { display: grid; gap: 6px; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+  .mod-h:hover .mod-t { transform: translateX(4px); }
+  .mod-t b { font-family: var(--f-display); font-size: clamp(19px, 2.2vw, 24px); font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
+  .mod.open .mod-t b { color: var(--brand); }
+  /* «Модуль 1 · 2 урока» — аккуратной плашкой */
+  .mod-t small { justify-self: start; color: var(--muted); font-size: 13px; font-weight: 600; background: var(--bg-2); padding: 4px 10px; border-radius: 980px; }
+  .mod-ic { position: relative; flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--bg-2); transition: background .3s, transform .5s cubic-bezier(.2,.8,.2,1); }
+  .mod-ic::before, .mod-ic::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 2px; margin: -1px 0 0 -7px; border-radius: 2px; background: var(--ink); transition: background .3s; }
+  .mod-ic::after { transform: rotate(90deg); }
+  .mod-h:hover .mod-ic { background: var(--line); }
+  .mod.open .mod-ic { background: var(--brand); transform: rotate(135deg); }
+  .mod.open .mod-ic::before, .mod.open .mod-ic::after { background: #fff; }
+
+  .mod-p { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .55s cubic-bezier(.2,.8,.2,1); }
+  .mod.open .mod-p { grid-template-rows: 1fr; }
+  .mod-in { overflow: hidden; min-height: 0; }
+  /* Отступ слева = номер (72) + промежуток (26) + поле карточки (26), чтобы текст стоял ровно под названием */
+  .mod-body { padding: 0 26px 26px 124px; display: grid; gap: 16px; font-size: 16px; }
+  .mod-body > p { color: var(--muted); max-width: 62ch; font-size: 16.5px; line-height: 1.55; }
+  .lessons { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .lessons li {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center;
+    background: var(--bg-2); border: 1px solid transparent; border-radius: 14px; padding: 12px 16px; font-weight: 500; line-height: 1.4;
+    transition: border-color .25s, background .25s;
+  }
+  .lessons li:hover { border-color: color-mix(in srgb, var(--brand) 35%, transparent); }
+  .lessons li span { font-size: 12.5px; font-weight: 700; color: var(--brand); background: var(--brand-soft); padding: 4px 10px; border-radius: 980px; white-space: nowrap; }
+  @media (prefers-reduced-motion: no-preference) {
+    .mod.open .lessons li { animation: bt-fadeUp .5s cubic-bezier(.2,.8,.2,1) both; }
+    .mod.open .lessons li:nth-child(1) { animation-delay: .12s; }
+    .mod.open .lessons li:nth-child(2) { animation-delay: .2s; }
+    .mod.open .lessons li:nth-child(3) { animation-delay: .28s; }
+    .mod.open .lessons li:nth-child(4) { animation-delay: .36s; }
+    .mod.open .mod-body > p { animation: bt-fadeUp .5s .05s both; }
+  }
+
+  /* Призыв под программой — тёмно-синяя плашка, чтобы выделялась */
+  .mods-cta {
+    max-width: 980px; margin: 28px auto 0; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    background: radial-gradient(120% 140% at 100% 0%, var(--banner-3) 0%, var(--banner) 60%); color: #fff;
+    border-radius: 22px; padding: 26px 30px;
+  }
+  .mods-cta p { font-size: 17px; line-height: 1.5; max-width: 52ch; color: var(--banner-muted); }
+  .mods-cta p b { color: #fff; }
+
+  @media (max-width: 640px) {
+    .mod-n { width: 44px; }
+    .mod-h { gap: 14px; padding: 18px 16px; }
+    .mod-body { padding: 0 16px 18px; }
+    .mod-ic { width: 36px; height: 36px; }
+    .lessons li { grid-template-columns: 1fr; gap: 6px; }
+    .lessons li span { justify-self: start; }
+    .mods-cta { padding: 22px; }
+    .mods-cta .btn { width: 100%; }
+  }
+}

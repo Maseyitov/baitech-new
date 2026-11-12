@@ -22,21 +22,28 @@
   "search": {
     "recent": "Recent searches",
     "clearHistory": "Clear",
+    "removeFromHistory": "Remove “{{text}}” from history",
     "popular": "Popular searches",
-    "products": "Products",
+    "similar": "Related searches",
     "categories": "Categories",
-    "categoryLabel": "category",
-    "showAll": "Show all results ({{count}})",
-    "loading": "Loading products…",
-    "showingFor": "Showing results for:",
-    "wrongLayout": "Looks like the wrong keyboard layout. Showing results for:",
-    "nothingFound": "No results for “{{query}}”",
-    "nothingFoundHint": "Check the spelling or search by SKU or brand.",
+    "categoryLabel": "Category",
+    "products": "Products",
+    "productsCount_one": "{{count}} product",
+    "productsCount_other": "{{count}} products",
     "article": "SKU",
-    "unavailable": "out of stock",
     "currency": "som",
-    "clearInput": "Clear search",
-    "removeFromHistory": "Remove “{{text}}” from history"
+    "unavailable": "Out of stock",
+    "loading": "Loading...",
+    "wrongLayout": "Wrong keyboard layout? Searching for:",
+    "showingFor": "Showing results for",
+    "nothingFound": "Nothing found for “{{query}}”",
+    "nothingFoundHint": "Try different wording or search by SKU",
+    "clearInput": "Clear",
+    "viewAll": "View all",
+    "loadMore": "Show more"
+  },
+  "card": {
+    "contactForPrice": "Contact us for the price"
   },
 
   "navbar": {

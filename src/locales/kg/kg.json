@@ -21,23 +21,29 @@
   "search": {
     "recent": "Акыркы издөөлөр",
     "clearHistory": "Тазалоо",
-    "popular": "Көп изделгендер",
-    "products": "Товарлар",
+    "removeFromHistory": "«{{text}}» тарыхтан өчүрүү",
+    "popular": "Популярдуу издөөлөр",
+    "similar": "Окшош издөөлөр",
     "categories": "Категориялар",
-    "categoryLabel": "категория",
-    "showAll": "Бардык жыйынтыктарды көрсөтүү ({{count}})",
-    "loading": "Товарлар жүктөлүүдө…",
-    "showingFor": "Төмөнкү суроо боюнча жыйынтыктар:",
-    "wrongLayout": "Клавиатуранын тили туура эмес окшойт. Төмөнкү суроо боюнча жыйынтыктар:",
-    "nothingFound": "«{{query}}» боюнча эч нерсе табылган жок",
-    "nothingFoundHint": "Жазылышын текшериңиз же артикул, бренд боюнча издеп көрүңүз.",
-    "article": "арт.",
-    "unavailable": "кампада жок",
+    "categoryLabel": "Категория",
+    "products": "Товарлар",
+    "productsCount_one": "{{count}} товар",
+    "productsCount_other": "{{count}} товар",
+    "article": "Арт.",
     "currency": "сом",
-    "clearInput": "Издөө талаасын тазалоо",
-    "removeFromHistory": "«{{text}}» тарыхтан өчүрүү"
+    "unavailable": "Азыр жок",
+    "loading": "Жүктөлүүдө...",
+    "wrongLayout": "Клавиатура туура эмеспи? Издөө:",
+    "showingFor": "Натыйжалар көрсөтүлүүдө:",
+    "nothingFound": "«{{query}}» боюнча эч нерсе табылган жок",
+    "nothingFoundHint": "Башкача жазып көрүңүз же артикул боюнча издеңиз",
+    "clearInput": "Тазалоо",
+    "viewAll": "Баарын көрүү",
+    "loadMore": "Дагы көрсөтүү"
   },
-
+  "card": {
+    "contactForPrice": "Баасы боюнча биз менен байланышыңыз"
+  },
   "navbar": {
     "catalog": "Каталог",
     "pcComponents": "Компьютер комплектүүлөрү",

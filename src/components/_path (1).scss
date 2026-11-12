@@ -1,0 +1,50 @@
+.bt-course {
+  /* ===== Шапка ===== */
+  &::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+  .head { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: color-mix(in srgb, var(--bg) 94%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid transparent; transition: border-color .3s; }
+  .head.scrolled { border-bottom-color: var(--line); }
+  .head .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 68px; }
+  /* Меню — белая «таблетка» с заметными пунктами; текущий раздел подсвечен зелёным */
+  .menu { display: flex; gap: 4px; padding: 5px; background: var(--surface); border: 1px solid var(--card-border); border-radius: 980px; box-shadow: var(--card-shadow); }
+  .menu a { position: relative; text-decoration: none; font-size: 15px; font-weight: 600; letter-spacing: -.01em; color: color-mix(in srgb, var(--ink) 78%, transparent); padding: 9px 16px; border-radius: 980px; transition: color .2s, background .2s; }
+  .menu a:hover { color: var(--brand); background: var(--brand-soft); }
+  .menu a.active { color: #fff; background: var(--brand); }
+  .menu a:focus-visible { outline-offset: 1px; }
+  .head .btn { padding: 12px 22px; font-size: 15px; font-weight: 600; box-shadow: 0 8px 20px -10px var(--brand); }
+  @media (max-width: 980px) { .menu { display: none; } }
+  @media (max-width: 420px) { .head .btn { padding: 9px 14px; } }
+
+  /* ===== Бургер-меню (телефон и планшет) ===== */
+  .burger { display: none; position: relative; width: 44px; height: 44px; margin-left: -10px; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--ink); cursor: pointer; transition: background .2s; }
+  .burger:hover { background: var(--bg-2); }
+  .burger span { position: absolute; left: 12px; width: 20px; height: 2px; border-radius: 2px; background: currentColor; transition: transform .35s cubic-bezier(.2,.8,.2,1), opacity .2s, top .35s cubic-bezier(.2,.8,.2,1); }
+  .burger span:nth-child(1) { top: 15px; }
+  .burger span:nth-child(2) { top: 21px; }
+  .burger span:nth-child(3) { top: 27px; }
+  .menu-open .burger span:nth-child(1) { top: 21px; transform: rotate(45deg); }
+  .menu-open .burger span:nth-child(2) { opacity: 0; transform: scaleX(.3); }
+  .menu-open .burger span:nth-child(3) { top: 21px; transform: rotate(-45deg); }
+
+  .m-menu { display: none; }
+  @media (max-width: 980px) {
+    .burger { display: block; }
+    .head.menu-open { border-bottom-color: var(--line); }
+    .m-menu:not([hidden]) {
+      display: grid; gap: 2px; position: absolute; left: 0; right: 0; top: 100%;
+      padding: 8px var(--gr) 16px var(--gl);
+      background: var(--bg); border-bottom: 1px solid var(--line);
+      box-shadow: 0 24px 40px -24px rgba(10,31,68,.35);
+    }
+    .m-menu a { display: block; padding: 14px 12px; border-radius: 14px; font-size: 18px; font-weight: 600; letter-spacing: -.015em; color: var(--ink); text-decoration: none; transition: background .2s, color .2s; }
+    .m-menu a:hover, .m-menu a:active { background: var(--bg-2); color: var(--brand); }
+    .m-menu a.active { background: var(--brand-soft); color: var(--brand); }
+  }
+  @media (max-width: 980px) and (prefers-reduced-motion: no-preference) {
+    .m-menu:not([hidden]) { animation: bt-menuIn .3s cubic-bezier(.2,.8,.2,1) both; }
+    .m-menu:not([hidden]) a { animation: bt-fadeUp .35s cubic-bezier(.2,.8,.2,1) both; }
+    .m-menu a:nth-child(2) { animation-delay: .04s; }
+    .m-menu a:nth-child(3) { animation-delay: .08s; }
+    .m-menu a:nth-child(4) { animation-delay: .12s; }
+    .m-menu a:nth-child(5) { animation-delay: .16s; }
+  }
+}
