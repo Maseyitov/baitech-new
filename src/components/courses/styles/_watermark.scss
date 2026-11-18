@@ -1,0 +1,13 @@
+.bt-course {
+  /* Блоки с «логотипами в невесомости» (сам эффект — в components/Watermark.jsx,
+     настройки — в watermark.config.js) */
+  .wm-host {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .wm-host > :not(.bt-space) {
+    position: relative;
+    z-index: 1;
+  }
+}

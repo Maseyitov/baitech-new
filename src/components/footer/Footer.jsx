@@ -4,6 +4,7 @@ import logo from "../../../assets/svg/Байтех лого 2 1.svg";
 import finik from "../../../assets/svg/Logo Purple 1.svg";
 import mbank from "../../../assets/svg/Component 19.svg";
 import optima from "../../../assets/svg/image-removebg-preview (6) 1.svg";
+import mapPreview from "../../../assets/png/map-2gis.png"; // скриншот карты 2ГИС
 
 import { FiPhone, FiClock, FiMapPin } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
@@ -11,9 +12,15 @@ import { IoChevronDownSharp } from "react-icons/io5";
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useSiteSettings } from "@/lib/settings/hook";
+
+/* ===== Карта 2ГИС ===== */
+
+const BAITECH_COORDS = { lat: 42.844049, lon: 74.636407 };
+
+// Лучше заменить на ссылку карточки фирмы: https://2gis.kg/bishkek/firm/XXXXXXXX
+const DGIS_LINK = `https://2gis.kg/bishkek/geo/${BAITECH_COORDS.lon}%2C${BAITECH_COORDS.lat}`;
 
 /* ===== Фирменные иконки соцсетей ===== */
 
@@ -74,21 +81,6 @@ const YouTubeIcon = () => (
 function Footer() {
   const { t } = useTranslation();
   const { settings, isLoading } = useSiteSettings();
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogoClick = (e) => {
-    e.preventDefault();
-    if (pathname === "/") {
-      // уже на главной: наверх и обновить данные
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      router.refresh();
-    } else {
-      // с другой страницы: на главную, наверх
-      router.push("/");
-      window.scrollTo({ top: 0 });
-    }
-  };
 
   const [openSections, setOpenSections] = useState({
     info: false,
@@ -101,31 +93,6 @@ function Footer() {
       ...prev,
       [section]: !prev[section],
     }));
-  };
-
-  const getMapEmbedUrl = () => {
-    const rawAddress = String(settings?.address || "").trim();
-
-    // Если уже готовый embed URL
-    if (/^https?:\/\//i.test(rawAddress)) {
-      if (
-        rawAddress.includes("yandex") ||
-        rawAddress.includes("openstreetmap")
-      ) {
-        return rawAddress;
-      }
-      if (
-        rawAddress.includes("google.com/maps") &&
-        !rawAddress.includes("output=embed")
-      ) {
-        const separator = rawAddress.includes("?") ? "&" : "?";
-        return `${rawAddress}${separator}output=embed`;
-      }
-      if (rawAddress.includes("google.com/maps/embed")) return rawAddress;
-    }
-
-    // По умолчанию Yandex Maps с координатами Baitech
-    return `https://yandex.ru/map-widget/v1/?ll=74.636407%2C42.844049&z=16&pt=74.636407,42.844049,pm2rdm&l=map`;
   };
 
   return (
@@ -324,36 +291,45 @@ function Footer() {
           </div>
         </div>
 
-        {/* Карта */}
+        {/* Карта 2ГИС */}
         <div className="footer__col footer__col--map">
           <div className="footer__map">
-            <div className="footer__map-title">{t("footer.map")}</div>
-            {!isLoading && (
-              <iframe
-                title="Yandex Map"
-                src={getMapEmbedUrl()}
-                width="100%"
-                height="400"
-                loading="lazy"
-                allow="fullscreen"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            )}
+            {/* Обманка: картинка карты вместо живого виджета */}
+            <Image
+              src={mapPreview}
+              alt="Байтех на карте 2ГИС"
+              fill
+              sizes="(max-width: 950px) 100vw, 360px"
+              className="footer__map-img"
+            />
+
+            {/* Метка на здании */}
+            {/* <span className="footer__map-pin" aria-hidden="true">
+              <svg viewBox="0 0 24 32" width="34" height="44">
+                <path
+                  d="M12 0C5.4 0 0 5.3 0 11.9 0 20.8 12 32 12 32s12-11.2 12-20.1C24 5.3 18.6 0 12 0z"
+                  fill="#1f8a63"
+                />
+                <circle cx="12" cy="12" r="5" fill="#fff" />
+              </svg>
+            </span> */}
+
+            {/* Клик по карте — открыть в 2ГИС */}
+            <a
+              className="footer__map-link"
+              href={DGIS_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Открыть Байтех в 2ГИС"
+            >
+              <span className="footer__map-btn">Открыть в 2ГИС ↗</span>
+            </a>
           </div>
         </div>
       </div>
 
-      <div className="footer__bottom flex justify-around  items-center gap-5">
+      <div className="footer__bottom flex justify-around items-center gap-5">
         <h3>Baitech © 2021</h3>
-
-        <a
-          className="border-b-[1px] border-b-[#0e2eff] leading-snug "
-          href="https://baitech-it.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Разработано Baitech.it company
-        </a>
       </div>
     </footer>
   );
