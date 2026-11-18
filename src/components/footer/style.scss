@@ -5,28 +5,31 @@
   font-family: "Montserrat", sans-serif;
 }
 
-footer {
+footer,
+.footer {
   width: 100%;
   background: #00162a;
 }
+
 /* === CONTAINER === */
 .footer__container {
   margin: 0 auto;
   max-width: 1280px !important;
   display: grid;
   color: #fff;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.1fr 1fr 0.9fr 0.8fr 1.6fr;
+  gap: 32px;
   padding: 60px 0px;
   align-items: flex-start;
+
   @media (max-width: 1200px) {
     padding: 60px 20px;
   }
-  @media (max-width: 700px) {
-    padding: 60px 15px;
-  }
   @media (max-width: 950px) {
     grid-template-columns: 1.4fr 1fr 1fr;
+  }
+  @media (max-width: 700px) {
+    padding: 60px 15px;
   }
 }
 
@@ -85,7 +88,7 @@ footer {
   margin-top: 1px;
 }
 
-/* === SOCIALS (ОНДОЛГОН) === */
+/* === SOCIALS === */
 .footer__socials {
   display: flex;
   flex-direction: column;
@@ -103,54 +106,47 @@ footer {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
-}
 
-.footer__social:hover {
-  opacity: 0.85;
-  transform: translateX(3px);
+  &:hover {
+    opacity: 0.85;
+    transform: translateX(3px);
+  }
+
+  &:hover .brand-icon {
+    transform: scale(1.1);
+  }
 }
 
 .footer__social-icon {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
-  background: rgba(34, 197, 94, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.footer__social-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent !important; // чтобы старый фон не перекрывал цвета
+  background: transparent;
   color: inherit;
 }
 
 .brand-icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
 
   &--whatsapp {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 7px;
     background: #25d366;
-    color: #fff;
 
     svg {
-      width: 16px;
-      height: 16px;
+      width: 19px !important;
+      height: 19px !important;
+      color: #fff !important;
+      fill: #fff !important;
     }
   }
-}
-
-.footer__social-icon svg {
-  font-size: 18px;
-  color: #22c55e;
 }
 
 .footer__social-text {
@@ -158,11 +154,35 @@ footer {
   color: #cbd5e1;
 }
 
+/* Фирменные цвета текстов */
+.footer__social--whatsapp .footer__social-text {
+  color: #25d366;
+}
+
+.footer__social--instagram .footer__social-text {
+  background: linear-gradient(
+    45deg,
+    #feda75,
+    #fa7e1e,
+    #d62976,
+    #962fbf,
+    #4f5bd5
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.footer__social--youtube .footer__social-text {
+  color: #ff3d3d;
+}
+
 /* === COLUMNS === */
 .footer__col {
-  padding-top: -30px;
   width: 100%;
 }
+
 .footer__col h4 {
   margin-top: 100px;
   font-size: 16px;
@@ -184,75 +204,72 @@ footer {
   font-size: 14px;
   text-decoration: none;
   transition: color 0.2s ease;
-}
 
-.footer__col ul li a:hover {
-  color: #22c55e;
+  &:hover {
+    color: #22c55e;
+  }
 }
 
 .footer__col ul h2 {
   font-size: 20px;
   font-weight: 500;
 }
-/* === SUBSCRIBE === */
-.footer__subscribe-text {
-  font-size: 14px;
-  color: #cbd5e1;
-  margin: 35px 0 16px;
-  line-height: 1.5;
-}
 
-.footer__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: transparent;
-  border: 1px solid #22c55e;
-  color: #22c55e;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.footer__btn:hover {
-  background: #22c55e;
-  color: #00162a;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
-}
-
-/* === MAP === */
+/* === MAP (2ГИС) === */
 .footer__map {
   position: relative;
   width: 100%;
-  max-width: 299px;
-  height: 250px;
-  margin-top: 0px;
-  @media (max-width: 950px) {
-    margin-top: 0px;
-    width: 100%;
+  height: 280px;
+  border-radius: 14px;
+  overflow: hidden;
+
+  .footer__map-img {
+    object-fit: cover;
+    object-position: center; // здание Байтех должно быть в центре скриншота
+    transition: transform 0.4s ease;
+  }
+
+  &:hover .footer__map-img {
+    transform: scale(1.04); // лёгкий «живой» эффект при наведении
   }
 }
 
-.footer__map-title {
+// Метка: острый кончик ровно в центре карты (на здании)
+.footer__map-pin {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -100%);
   z-index: 2;
-  background: rgba(0, 22, 42, 0.85);
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
 }
 
-.footer__map iframe {
-  width: 100%;
-  height: 100%;
-  border-radius: 14px;
-  border: none;
+// Прозрачная ссылка поверх всей карты
+.footer__map-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 12px;
+  text-decoration: none;
+
+  &:hover .footer__map-btn {
+    background: #1f8a63;
+    transform: translateY(-2px);
+  }
+}
+
+.footer__map-btn {
+  background: rgba(0, 22, 42, 0.85);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 /* === BOTTOM === */
@@ -262,13 +279,6 @@ footer {
   color: #94a3b8;
   padding: 16px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* ── previous styles remain unchanged until responsive part ── */
-
-.footer {
-  width: 100%;
-  background: #00162a;
 }
 
 /* === ACCORDION === */
@@ -283,6 +293,7 @@ footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   @media (max-width: 780px) {
     margin-top: 20px;
   }
@@ -307,18 +318,25 @@ footer {
 .footer__accordion-content {
   overflow: hidden;
   max-height: 0;
+  margin-top: 0;
   transition:
     max-height 0.35s ease,
     margin-top 0.35s ease;
-  margin-top: 0;
 }
 
 .footer__accordion-content--open {
-  max-height: 800px; // large enough value (you can increase if needed)
+  max-height: 800px;
   margin-top: 16px;
 }
 
-/* Desktop — show titles normally, hide accordion styles */
+/* Планшет — карта на всю ширину строки */
+@media (max-width: 950px) {
+  .footer__col--map {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Desktop — обычные заголовки, без аккордеона */
 @media (min-width: 781px) {
   .footer__accordion-header {
     pointer-events: none;
@@ -332,16 +350,15 @@ footer {
   .footer__accordion-content {
     max-height: none !important;
     overflow: visible;
-    margin-top: 0px; // original spacing
+    margin-top: 0px;
   }
 
-  // Restore original margin-top for desktop h4
   .footer__col h4 {
     margin-top: 100px;
   }
 }
 
-/* Mobile — accordion mode */
+/* Mobile — режим аккордеона */
 @media (max-width: 780px) {
   .footer__container {
     display: flex;
@@ -353,20 +370,18 @@ footer {
   .footer__col {
     width: 100%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 0px 0;
+    padding: 0;
 
     &:first-child {
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
   }
 
-  // Contacts block has different spacing
   .footer__col--contacts {
     padding-top: 0;
     border-top: none;
   }
 
-  // Map adapts
   .footer__col--map {
     padding-bottom: 0;
     border-bottom: none;
@@ -379,7 +394,7 @@ footer {
   .footer__map {
     margin-top: 16px;
     max-width: 100%;
-    height: 220px;
+    height: 240px;
   }
 
   .footer__col h4 {
@@ -392,66 +407,6 @@ footer {
   }
 
   .footer__bottom {
-    padding: 20px 20px;
+    padding: 20px;
   }
-}
-/* ===== Соцсети: фирменные иконки и цвета ===== */
-/* Вставь этот блок в САМЫЙ КОНЕЦ style.scss */
-
-.footer__social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent !important;
-}
-
-.brand-icon {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-
-  &--whatsapp {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 7px;
-    background: #25d366 !important;
-
-    svg {
-      width: 19px !important;
-      height: 19px !important;
-      color: #fff !important;
-      fill: #fff !important;
-    }
-  }
-}
-
-/* Фирменные цвета текстов */
-.footer__social--whatsapp .footer__social-text {
-  color: #25d366 !important;
-}
-
-.footer__social--instagram .footer__social-text {
-  background: linear-gradient(
-    45deg,
-    #feda75,
-    #fa7e1e,
-    #d62976,
-    #962fbf,
-    #4f5bd5
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent !important;
-}
-
-.footer__social--youtube .footer__social-text {
-  color: #ff3d3d !important;
-}
-
-/* Ховер: только лёгкое увеличение иконки */
-.footer__social:hover .brand-icon {
-  transform: scale(1.1);
 }

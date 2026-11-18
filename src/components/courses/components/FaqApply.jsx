@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { WA_PHONE } from "../data";
 import { useCourseText } from "../i18n";
+import Watermark from "./Watermark";
 
 export default function FaqApply() {
   const T = useCourseText();
@@ -41,12 +42,17 @@ export default function FaqApply() {
   };
 
   // Убираем ошибку, как только человек начал исправлять поле
-  const clearError = (key) => () => errors[key] && setErrors((prev) => ({ ...prev, [key]: "" }));
+  const clearError = (key) => () =>
+    errors[key] && setErrors((prev) => ({ ...prev, [key]: "" }));
 
   return (
-    <section className="grey" id="faq">
+    <section className="wm-host grey" id="faq">
+      <Watermark area="faq" />
       <div className="wrap">
-        <div className="head-c rv rv-blur"><span className="eyebrow">{T.faq.eyebrow}</span><h2>{T.faq.title}</h2></div>
+        <div className="head-c rv rv-blur">
+          <span className="eyebrow">{T.faq.eyebrow}</span>
+          <h2>{T.faq.title}</h2>
+        </div>
         <div className="ff">
           <div className="faq rv">
             {T.faq.items.map(([q, a], i) => (
@@ -68,38 +74,80 @@ export default function FaqApply() {
                 <form id="f" noValidate onSubmit={onSubmit}>
                   <label htmlFor="n">
                     {A.name}
-                    <input id="n" ref={nameRef} autoComplete="name" placeholder={A.namePh} aria-invalid={!!errors.n} onInput={clearError("n")} />
+                    <input
+                      id="n"
+                      ref={nameRef}
+                      autoComplete="name"
+                      placeholder={A.namePh}
+                      aria-invalid={!!errors.n}
+                      onInput={clearError("n")}
+                    />
                     {errors.n && <span className="err">{errors.n}</span>}
                   </label>
                   <label htmlFor="ph">
                     {A.phone}
-                    <input id="ph" ref={phoneRef} type="tel" inputMode="tel" autoComplete="tel" placeholder="+996 ___ ___ ___" aria-invalid={!!errors.p} onInput={clearError("p")} />
+                    <input
+                      id="ph"
+                      ref={phoneRef}
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      placeholder="+996 ___ ___ ___"
+                      aria-invalid={!!errors.p}
+                      onInput={clearError("p")}
+                    />
                     {errors.p && <span className="err">{errors.p}</span>}
                   </label>
                   <label htmlFor="lv">
                     {A.level}
                     <select id="lv" ref={levelRef} defaultValue="0">
                       {A.levels.map((l, i) => (
-                        <option key={i} value={i}>{l}</option>
+                        <option key={i} value={i}>
+                          {l}
+                        </option>
                       ))}
                     </select>
                   </label>
-                  <button className="btn btn-brand" type="submit">{A.submit}</button>
+                  <button className="btn btn-brand" type="submit">
+                    {A.submit}
+                  </button>
                   <span className="small">
                     {A.consent[0]}
-                    <a href="https://baitech-new-preview.vercel.app/privacy/">{A.consent[1]}</a>
+                    <a href="https://baitech-new-preview.vercel.app/privacy/">
+                      {A.consent[1]}
+                    </a>
                     {A.consent[2]}
                   </span>
                 </form>
               </>
             ) : (
               <div className="done" id="done">
-                <span className="done-ic" aria-hidden="true">✓</span>
+                <span className="done-ic" aria-hidden="true">
+                  ✓
+                </span>
                 <h3>{A.doneTitle}</h3>
                 <p>{A.doneText}</p>
-                <a className="btn btn-brand" href={waHref} target="_blank" rel="noopener noreferrer">{A.doneBtn}</a>
-                <p>{A.call} <a className="tel" href="tel:+996558000222">+996 558 000 222</a></p>
-                <button type="button" className="again" onClick={() => setWaHref(null)}>{A.edit}</button>
+                <a
+                  className="btn btn-brand"
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {A.doneBtn}
+                </a>
+                <p>
+                  {A.call}{" "}
+                  <a className="tel" href="tel:+996558000222">
+                    +996 558 000 222
+                  </a>
+                </p>
+                <button
+                  type="button"
+                  className="again"
+                  onClick={() => setWaHref(null)}
+                >
+                  {A.edit}
+                </button>
               </div>
             )}
           </aside>

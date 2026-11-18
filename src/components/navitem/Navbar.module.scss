@@ -1,13 +1,21 @@
 @use "sass:color";
+
 // Переменные
 $bg-color: #f8f9fa;
 $card-bg: #ffffff;
 $text-color: #334155;
 $border-color: #e2e8f0;
 $shadow: 0 2px 10px rgba(0, 0, 0, 0.301);
-$hover-border: #3b82f6;
-$active-bg: #0e2e5b;
+
+// Каталог (тёмно-синий, как на сайте)
+$catalog-bg: #0e2e5b;
 $active-text: #ffffff;
+
+// Зелёный для разделов
+$green: #00A651; // активная кнопка
+$green-dark: #176e4f; // активная при наведении
+$green-light: #ecf7f2; // фон обычной кнопки при наведении
+$green-border: #2f9e74; // рамка при наведении
 
 .navContainer {
   display: flex;
@@ -46,16 +54,11 @@ $active-text: #ffffff;
     padding: 5px 10px;
   }
 
-  &:hover {
-    border-color: $hover-border;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-  }
-
   .label {
     color: $text-color;
     font-size: 16px;
     font-weight: 400;
+    transition: color 0.2s ease-in-out;
     @media (max-width: 768px) {
       font-size: 14px;
     }
@@ -65,13 +68,26 @@ $active-text: #ffffff;
     display: flex;
     align-items: center;
     color: #1e293b;
+    transition: color 0.2s ease-in-out;
+  }
+
+  &:hover {
+    // border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+
+    .label,
+    .icon {
+      color: $catalog-bg;
+    }
   }
 }
 
+// Активный раздел — зелёный
 .navItemActive {
-  background-color: $active-bg;
-  border-color: $active-bg;
-  box-shadow: 0 4px 12px rgba(14, 46, 91, 0.3);
+  background-color: $green;
+  border-color: $green;
+  box-shadow: 0 4px 12px rgba(31, 138, 99, 0.35);
   transform: translateY(-1px);
 
   .label {
@@ -84,18 +100,23 @@ $active-text: #ffffff;
   }
 
   &:hover {
-    background-color: color.adjust($active-bg, $lightness: -5%);
-    background-color: darken($active-bg, 5%);
+    background-color: color.adjust($green, $lightness: -5%);
+
+    .label,
+    .icon {
+      color: $active-text;
+    }
   }
 }
 
+// Каталог — остаётся тёмно-синим
 .navItemCatalog {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px 40px;
-  background-color: $active-bg;
-  border: 1px solid $active-bg;
+  background-color: $catalog-bg;
+  border: 1px solid $catalog-bg;
   border-radius: 10px;
   text-decoration: none;
   box-shadow: $shadow;
@@ -104,15 +125,13 @@ $active-text: #ffffff;
   @media (max-width: 768px) {
     padding: 8px 20px;
   }
-
   @media (max-width: 480px) {
     gap: 5px;
     padding: 5px 10px;
   }
 
   &:hover {
-    background-color: color.adjust($active-bg, $lightness: -5%);
-    background-color: darken($active-bg, 5%);
+    background-color: color.adjust($catalog-bg, $lightness: -5%);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
   }
@@ -121,7 +140,6 @@ $active-text: #ffffff;
     color: $active-text;
     font-size: 16px;
     font-weight: 500;
-
     @media (max-width: 768px) {
       font-size: 14px;
     }
