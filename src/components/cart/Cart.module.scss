@@ -1,183 +1,1208 @@
-.cartWrapper {
-  padding: 40px 0;
-  min-height: 100vh;
-
-  @media (max-width: 1200px) {
-    padding: 20px 20px;
+// ===== АНИМАЦИИ =====
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
-  @media (max-width: 768px) {
-    padding: 20px 15px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.title {
-  font-size: 18px;
-  font-weight: 500;
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+$navy: #0e2e5b;
+$blue: #1e4ed8;
+$border: #e5e9f0;
+
+.cartWrapper {
+  padding: 10px 0 60px;
+  min-height: 100vh;
+
+  @media (max-width: 1200px) {
+    padding: 10px 20px 40px;
+  }
+  @media (max-width: 768px) {
+    padding: 10px 15px 30px;
+  }
+}
+
+// ЗАГОЛОВОК
+.pageHead {
   margin-bottom: 20px;
+  animation: fadeUp 0.4s ease both;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 26px;
+  font-weight: 700;
+  color: $navy;
 
   @media (max-width: 768px) {
-    font-size: 16px;
-    margin-bottom: 15px;
+    font-size: 21px;
   }
+}
+
+.countBadge {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 14px;
+  background: $navy;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop 0.4s ease both;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
 }
 
 // ПУСТАЯ КОРЗИНА
 .emptyCart {
   text-align: center;
-  padding: 100px 20px;
+  padding: 60px 20px;
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow: 0 7px 17px rgba(14, 46, 91, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  animation: fadeUp 0.45s ease both;
 
-  h3 { font-size: 22px; color: #333; }
-  p { color: #888; margin-bottom: 10px; }
+  h3 {
+    font-size: 22px;
+    color: #1f2937;
+    font-weight: 600;
+  }
+  p {
+    color: #6b7280;
+    font-size: 15px;
+  }
 
   @media (max-width: 768px) {
-    padding: 60px 10px;
-    h3 { font-size: 18px; }
-    p { font-size: 14px; }
+    padding: 40px 14px;
+    h3 {
+      font-size: 18px;
+    }
+    p {
+      font-size: 14px;
+    }
   }
+}
+
+.emptyIcon {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eef3fb, #dde7f6);
+  color: $navy;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.emptyActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 760px;
+  margin-top: 36px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    margin-top: 24px;
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 14px;
+  border-radius: 12px;
+  background: #f5f7fa;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.45;
+  animation: fadeUp 0.45s ease both;
+
+  b {
+    font-size: 14px;
+    color: #1f2937;
+  }
+}
+
+.stepIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  color: $navy;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(14, 46, 91, 0.1);
+  margin-bottom: 4px;
+}
+
+// РАЗМЕТКА
+.cartContent {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.itemsCol {
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(14, 46, 91, 0.06);
+  animation: fadeUp 0.4s ease both;
+}
+
+.selectAll {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: $navy;
+    cursor: pointer;
+  }
+}
+
+.clearBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover:not(:disabled) {
+    color: #e35845;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 // КАРТОЧКА ТОВАРА
 .card {
   display: flex;
+  align-items: stretch;
   background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 15px;
+  border: 1.5px solid $border;
+  border-radius: 14px;
+  padding: 16px;
   position: relative;
-  gap: 20px;
+  gap: 18px;
+  animation: fadeUp 0.4s ease both;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.25s,
+    transform 0.25s,
+    opacity 0.25s;
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    padding: 15px;
-    gap: 10px;
+  &:hover {
+    box-shadow: 0 8px 22px rgba(14, 46, 91, 0.1);
+    transform: translateY(-2px);
   }
 
-  .indexNumber {
-    position: absolute;
-    left: -30px;
-    top: 0;
-    background: #eee;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+  @media (max-width: 768px) {
+    padding: 12px;
+    gap: 12px;
   }
 }
 
+.cardSelected {
+  border-color: $navy;
+  box-shadow: 0 0 0 3px rgba(14, 46, 91, 0.08);
+}
+
+.cardRemoving {
+  opacity: 0.4;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+.selectBox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding-right: 2px;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: $navy;
+}
+
 .imageBlock {
-  width: 200px;
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
   position: relative;
-  text-align: center;
+  border-radius: 10px;
+  background: #f5f7fa;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: 768px) {
-    width: 100%;
-    height: auto;
+    width: 90px;
+    height: 90px;
   }
 
   .badge {
     position: absolute;
-    top: 0; left: 0;
+    top: 6px;
+    left: 6px;
     background: #e8f5e9;
-    color: #4caf50;
+    color: #3aa15b;
     font-size: 10px;
+    font-weight: 600;
     padding: 2px 8px;
     border-radius: 20px;
+    z-index: 1;
   }
 
-  img { width: 100%; object-fit: contain; }
+  .discount {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: #e35845;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 20px;
+    z-index: 1;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+  }
+}
+
+.card:hover .imageBlock img {
+  transform: scale(1.05);
 }
 
 .infoBlock {
   flex: 1;
-
-  .header {
-    display: flex; justify-content: space-between;
-    .article { font-size: 12px; color: #aaa; }
-    .deleteBtn { background: none; border: none; color: #aaa; cursor: pointer; &:hover { color: red; } }
-  }
-
-  .itemTitle { font-size: 16px; font-weight: 600; margin: 10px 0; line-height: 1.4; }
-  .description { font-size: 13px; color: #777; margin-bottom: 15px; }
-
-  .priceRow {
-    .bonus { color: #4caf50; font-size: 13px; margin-bottom: 4px; }
-    .price { font-size: 20px; font-weight: 700; color: #2e7d32; }
-
-    @media (max-width: 768px) {
-      display: flex;
-      justify-content: space-between;
-      .price { font-size: 18px; }
-      .bonus { font-size: 12px; }
-    }
-  }
-}
-
-.cartContent {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-
-  @media (max-width: 1024px) {
-    flex-direction: column-reverse;;
-    gap: 15px;
-  }
-}
-
-.summary {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  @media (max-width:1024px) {
-    flex-direction: row;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    .article {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .deleteBtn {
+      background: none;
+      border: none;
+      color: #b0b7c3;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 8px;
+      transition:
+        color 0.2s,
+        background 0.2s;
+      &:hover {
+        color: #e35845;
+        background: #fdecea;
+      }
+    }
+  }
+
+  .itemTitle {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 4px 0 6px;
+    line-height: 1.4;
+    color: #1f2937;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $blue;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+
+  .description {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 10px;
+    line-height: 1.45;
+
+    @media (max-width: 480px) {
+      display: none;
+    }
   }
 }
 
 .footer {
-  display: flex; justify-content: space-between; align-items: center; margin-top: 15px;
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: auto;
+  flex-wrap: wrap;
 
   .counter {
-    display: flex; align-items: center; border: 1px solid #ddd; border-radius: 20px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #dfe3ea;
+    border-radius: 20px;
+    background: #f5f7fa;
 
-    button { padding: 5px 10px; border: none; background: none; cursor: pointer; }
-    span { padding: 0 15px; font-weight: 600; }
+    button {
+      padding: 6px 10px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: $navy;
+      border-radius: 20px;
+      transition: background 0.2s;
+      display: flex;
 
-    @media (max-width: 480px) {
-      span { padding: 0 8px; }
-      button { padding: 4px 6px; }
+      &:hover:not(:disabled) {
+        background: #e5ebf3;
+      }
+      &:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+    }
+    span {
+      padding: 0 12px;
+      font-weight: 600;
+      min-width: 36px;
+      text-align: center;
     }
   }
-  
-  .checkbox { width: 20px; height: 20px; cursor: pointer; }
+}
+
+.priceRow {
+  text-align: right;
+
+  .bonus {
+    color: #3aa15b;
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  .price {
+    font-size: 20px;
+    font-weight: 700;
+    color: $navy;
+    animation: pop 0.35s ease;
+
+    @media (max-width: 480px) {
+      font-size: 17px;
+    }
+  }
+  .unitPrice {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 2px;
+  }
+}
+
+// ИТОГО СПРАВА
+.summary {
+  position: sticky;
+  top: 20px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 7px 17px rgba(14, 46, 91, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeUp 0.45s ease 0.1s both;
+
+  @media (max-width: 1024px) {
+    position: static;
+  }
+}
+
+.summaryTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: $navy;
+  margin-bottom: 4px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #6b7280;
+
+  span:last-child {
+    color: #1f2937;
+    font-weight: 500;
+  }
+}
+
+.summaryTotal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 0;
+  margin: 4px 0;
+  border-top: 1px dashed #dfe3ea;
+  border-bottom: 1px dashed #dfe3ea;
+
+  span {
+    font-size: 13px;
+    color: #6b7280;
+  }
+  strong {
+    font-size: 26px;
+    color: $navy;
+    animation: pop 0.35s ease;
+  }
+  small {
+    font-size: 13px;
+    color: #3aa15b;
+  }
+}
+
+.summaryHint {
+  font-size: 12px;
+  color: #e35845;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.guestNote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #eef6f0;
+  color: #2e7d32;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+}
+
+.findOrderLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: $navy;
+  text-decoration: underline;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $blue;
+  }
 }
 
 // КНОПКИ
 .btnPrimary {
-  background: #003060; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer;
-  font-weight: 600; &:hover { background: #004080; }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: $navy;
+  color: white;
+  border: none;
+  padding: 13px 26px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.15s,
+    box-shadow 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #16407c;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(14, 46, 91, 0.25);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 
   @media (max-width: 480px) {
-    padding: 10px 20px;
+    padding: 11px 20px;
     font-size: 14px;
   }
 }
 
+.btnBlock {
+  width: 100%;
+}
+
 .btnOutline {
-  background: none; border: 1px solid #003060; color: #003060; padding: 10px 20px; border-radius: 8px; cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid $navy;
+  color: $navy;
+  padding: 11px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+
+  &:hover {
+    background: #eef3fb;
+    transform: translateY(-1px);
+  }
 
   @media (max-width: 480px) {
-    padding: 8px 15px;
+    padding: 9px 15px;
+    font-size: 13px;
+  }
+}
+
+// СМЕТА
+.smeta {
+  margin-top: 30px;
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 7px 17px rgba(14, 46, 91, 0.08);
+  animation: fadeUp 0.45s ease 0.15s both;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+}
+
+.smetaHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.smetaTitle {
+  font-size: 19px;
+  font-weight: 700;
+  color: $navy;
+}
+
+.smetaSubtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.smetaTableWrap {
+  overflow-x: auto;
+  border: 1px solid $border;
+  border-radius: 12px;
+}
+
+.smetaTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 520px;
+
+  th,
+  td {
+    border-bottom: 1px solid #eef1f5;
+    padding: 11px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: #f5f7fa;
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+  }
+
+  tbody tr {
+    transition: background 0.2s;
+    &:hover {
+      background: #fafbfd;
+    }
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    th,
+    td {
+      padding: 8px 6px;
+    }
+  }
+}
+
+.center {
+  text-align: center !important;
+}
+.right {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.smetaArticle {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.smetaFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.smetaTotal {
+  font-size: 22px;
+  font-weight: 700;
+  color: $navy;
+
+  @media (max-width: 480px) {
+    font-size: 18px;
+  }
+}
+
+.smetaBonus {
+  color: #3aa15b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageHead,
+  .emptyCart,
+  .emptyIcon,
+  .step,
+  .toolbar,
+  .card,
+  .summary,
+  .smeta,
+  .countBadge,
+  .priceRow .price,
+  .summaryTotal strong {
+    animation: none !important;
+  }
+}
+
+// Заказчик + кнопка печати
+.smetaActions {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.customerField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+
+  input {
+    min-width: 260px;
+    padding: 10px 12px;
+    border: 1.5px solid #e0e4ea;
+    border-radius: 10px;
+    background: #f5f7fa;
     font-size: 14px;
+    color: #1f2937;
+    outline: none;
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+
+    &:focus {
+      border-color: #0e2e5b;
+      background: #fff;
+    }
+
+    @media (max-width: 600px) {
+      min-width: 0;
+      width: 100%;
+    }
+  }
+}
+
+// =====================================================================
+// АДАПТИВ КОРЗИНЫ
+// =====================================================================
+
+// Защита от «распирания» колонок длинным текстом
+.cartContent > * {
+  min-width: 0;
+}
+.card {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.infoBlock .itemTitle,
+.infoBlock .description {
+  overflow-wrap: anywhere;
+}
+
+.cartContent {
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+// Части блока «Ваш заказ» (на широком экране — просто колонкой)
+.summaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.summaryRows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.summaryAction {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.summaryExtra {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ---------- 1245px и меньше: товары во всю ширину, «Ваш заказ» — плашка снизу ----------
+@media (max-width: 1245px) {
+  .cartContent {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .summary {
+    position: sticky;
+    top: auto;
+    bottom: 12px;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(220px, 260px);
+    grid-template-areas:
+      "info  total action"
+      "extra extra extra";
+    align-items: center;
+    gap: 12px 24px;
+    padding: 16px 20px;
+    box-shadow:
+      0 -4px 24px rgba(14, 46, 91, 0.12),
+      0 7px 17px rgba(14, 46, 91, 0.1);
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .summaryInfo {
+    grid-area: info;
+    gap: 6px;
+  }
+
+  .summaryTitle {
+    margin-bottom: 0;
+    font-size: 16px;
+  }
+
+  .summaryRows {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .summaryRow {
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .summaryTotal {
+    grid-area: total;
+    border: none;
+    padding: 0;
+    margin: 0;
+    align-items: flex-end;
+    text-align: right;
+
+    strong {
+      font-size: 24px;
+      white-space: nowrap;
+    }
+  }
+
+  .summaryAction {
+    grid-area: action;
+  }
+
+  .summaryHint {
+    font-size: 11px;
+  }
+
+  .summaryExtra {
+    grid-area: extra;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #dfe3ea;
+  }
+
+  .guestNote {
+    flex: 1;
+    padding: 6px 10px;
+    background: transparent;
+  }
+
+  .findOrderLink {
+    white-space: nowrap;
+  }
+
+  // Карточка товара чуть компактнее
+  .imageBlock {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+// ---------- Планшет: 1020px и меньше ----------
+@media (max-width: 1020px) {
+  .summary {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
+    grid-template-areas:
+      "info   action"
+      "total  action"
+      "extra  extra";
+    gap: 8px 20px;
+  }
+
+  .summaryTotal {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 8px;
+    text-align: left;
+
+    strong {
+      font-size: 22px;
+    }
+  }
+
+  .summaryRows {
+    display: none;
+  } // на узком экране хватает «Выбрано» в кнопке
+}
+
+// ---------- Телефон: 768px и меньше ----------
+@media (max-width: 768px) {
+  .title {
+    font-size: 22px;
+  }
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .summary {
+    position: static;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "info"
+      "total"
+      "action"
+      "extra";
+    padding: 16px;
+    box-shadow: 0 7px 17px rgba(14, 46, 91, 0.1);
+  }
+
+  .summaryRows {
+    display: flex;
+  }
+
+  .summaryTotal {
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 1px dashed #dfe3ea;
+    border-bottom: 1px dashed #dfe3ea;
+  }
+
+  .summaryExtra {
+    flex-direction: column;
+    align-items: stretch;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .guestNote {
+    background: #eef6f0;
+  }
+
+  .toolbar {
+    padding: 10px 12px;
+  }
+
+  .card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .imageBlock {
+    width: 88px;
+    height: 88px;
+  }
+
+  .infoBlock .itemTitle {
+    font-size: 14px;
+  }
+
+  .footer {
+    gap: 8px;
+  }
+
+  .priceRow .price {
+    font-size: 17px;
+  }
+
+  // Смета: таблица превращается в карточки
+  .smetaHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .smetaActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .smetaTableWrap {
+    border: none;
+    overflow: visible;
+  }
+
+  .smetaTable {
+    min-width: 0;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 12px;
+      border: 1px solid #e5e9f0;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    td {
+      border: none;
+      padding: 0;
+      text-align: left !important;
+      font-size: 13px;
+    }
+
+    td[data-label]::before {
+      content: attr(data-label) ": ";
+      color: #9ca3af;
+    }
+  }
+
+  .cellNum {
+    display: none;
+  }
+
+  .cellName {
+    grid-column: 1 / -1;
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px !important;
+    margin-bottom: 4px;
+  }
+
+  .cellSum {
+    grid-column: 1 / -1;
+    font-weight: 700;
+    color: #0e2e5b;
+    text-align: right !important;
+    padding-top: 6px !important;
+    border-top: 1px dashed #e5e9f0 !important;
+    margin-top: 2px;
+  }
+
+  .smetaFooter {
+    align-items: stretch;
+  }
+  .smetaTotal {
+    text-align: right;
+  }
+}
+
+// ---------- Маленький телефон: 400px и меньше ----------
+@media (max-width: 400px) {
+  .imageBlock {
+    width: 72px;
+    height: 72px;
+  }
+  .footer .counter span {
+    padding: 0 8px;
+    min-width: 28px;
+  }
+  .smetaTable tr {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .imageBlock .badge {
+    white-space: nowrap;
+    font-size: 9px;
+    padding: 1px 6px;
+    top: 4px;
+    left: 4px;
+  }
+}
+
+// Плашка «Ваш заказ» внизу экрана: справа место под плавающие кнопки (калькулятор, WhatsApp)
+@media (max-width: 1245px) and (min-width: 769px) {
+  .summary {
+    padding-right: 170px;
   }
 }

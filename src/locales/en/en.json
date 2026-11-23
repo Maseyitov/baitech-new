@@ -3,9 +3,9 @@
     "contact": "Contacts",
     "phones": "Phones",
     "address": "Address",
-    "socials": "Social Media"
+    "socials": "Social Media",
+    "search": "Search"
   },
-
   "searchPlaceholder": {
     "search": "Search",
     "among": "among",
@@ -18,7 +18,6 @@
       "cable 3×2.5"
     ]
   },
-
   "search": {
     "recent": "Recent searches",
     "clearHistory": "Clear",
@@ -43,9 +42,18 @@
     "loadMore": "Show more"
   },
   "card": {
-    "contactForPrice": "Contact us for the price"
+    "contactForPrice": "Contact us for pricing",
+    "whatsapp": "Contact via WhatsApp",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "checkAvailability": "Check Availability",
+    "article": "Article",
+    "bonuses": "bonuses",
+    "currency": "som",
+    "addToCart": "Add to Cart",
+    "writeToWhatsApp": "Message us",
+    "bonusPoints": "points"
   },
-
   "navbar": {
     "catalog": "Catalog",
     "pcComponents": "PC Components",
@@ -397,18 +405,6 @@
       "Upon client request, we provide copies of certificates and licenses."
     ]
   },
-  "card": {
-    "whatsapp": "Contact via WhatsApp",
-    "inStock": "In Stock",
-    "outOfStock": "Out of Stock",
-    "checkAvailability": "Check Availability",
-    "article": "Article",
-    "bonuses": "bonuses",
-    "currency": "som",
-    "addToCart": "Add to Cart",
-    "contactForPrice": "Contact us for pricing",
-    "writeToWhatsApp": "Message us"
-  },
   "profile": {
     "loading": "Loading...",
     "menuButton": "Menu",
@@ -759,7 +755,57 @@
       "goToCatalog": "Go to Catalog"
     },
     "checkout": "Checkout",
-    "clearAll": "Clear All"
+    "clearAll": "Clear All",
+    "clearConfirm": "Remove all items from the cart?",
+    "smeta": {
+      "title": "Estimate",
+      "product": "Product",
+      "quantity": "Qty",
+      "price": "Price",
+      "sum": "Amount",
+      "total": "Total",
+      "bonusTotal": "For points",
+      "subtitle": "All items in your cart — you can print it or save as PDF",
+      "print": "Print / Save as PDF",
+      "totalQuantity": "Total items",
+      "docTitle": "Estimate for equipment supply and installation",
+      "number": "No.",
+      "equipment": "Equipment name",
+      "unit": "Unit",
+      "materialsTotal": "Total cost of materials",
+      "grandTotal": "Estimate total",
+      "phone": "Tel",
+      "inn": "TIN",
+      "account": "Account",
+      "date": "Date",
+      "approved": "Approved",
+      "currencyNote": "Prices are in KGS (som).",
+      "service": "Service name",
+      "servicesTotal": "Total cost of services",
+      "customer": "Customer",
+      "customerPlaceholder": "Full name or company name"
+    },
+    "subtitle": "Tick the items you need and click “Checkout”. No registration required.",
+    "findOrder": "Find my order",
+    "steps": {
+      "addTitle": "Add products",
+      "addText": "Click the cart icon on a product card",
+      "orderTitle": "Place an order",
+      "orderText": "No registration — just your name and phone",
+      "receiptTitle": "Get a receipt",
+      "receiptText": "Use the order number to pick up your purchase"
+    },
+    "selectAll": "Select all",
+    "summary": {
+      "title": "Your order",
+      "inCart": "In cart",
+      "selected": "Selected for checkout",
+      "toPay": "To pay",
+      "selectHint": "Tick the items you want to order",
+      "guestNote": "You can order without registration. After checkout you will get an order number and a receipt."
+    },
+    "select": "Select for order",
+    "remove": "Remove"
   },
   "productCard": {
     "loading": "Loading...",
@@ -769,7 +815,8 @@
     "bonuses": "bonuses",
     "addToCart": "Add to Cart",
     "contactForPrice": "Contact us for pricing",
-    "writeToWhatsApp": "Message us"
+    "writeToWhatsApp": "Message us",
+    "bonusPoints": "points"
   },
   "description": {
     "title": "Description",
@@ -820,7 +867,17 @@
       "submitButton": "Place Order",
       "paymentMethod": "Payment method",
       "payWithBonus": "With bonus points ({{balance}})",
-      "noBonus": "You have no bonus points"
+      "noBonus": "You have no bonus points",
+      "pickup": "Pickup from office",
+      "delivery": "Delivery",
+      "total": "Total",
+      "deliveryMethod": "Receiving method",
+      "name": "Name",
+      "addressPlaceholder": "City, street, building, apartment",
+      "pickupHint": "Pick up your order at our office:",
+      "bonusOnlyForUsers": "Items for points can only be bought after signing in.",
+      "payQr": "QR code (online)",
+      "payCash": "Cash on receipt"
     },
     "success": {
       "title": "Order Information",
@@ -828,13 +885,21 @@
       "expectedDate": "Expected Date",
       "totalAmount": "Total Order Amount",
       "processingPayment": "Processing...",
-      "payButton": "Pay"
+      "payButton": "Pay",
+      "orderDate": "Order date",
+      "orderNumber": "Order number"
     },
     "messages": {
       "fillAllFields": "Fill in all fields",
       "orderError": "Error placing order",
       "paymentSuccess": "Order paid!",
-      "paymentError": "Error creating payment"
+      "paymentError": "Error creating payment",
+      "payLater": "The order has been created but not paid. You can pay on the order page."
+    },
+    "errors": {
+      "name": "Enter your name",
+      "phone": "Enter your phone number",
+      "address": "Enter the delivery address"
     }
   },
   "auth": {
@@ -844,6 +909,106 @@
       "register": "Register",
       "login": "Login"
     }
+  },
+  "guestOrder": {
+    "findFillAll": "Enter the order number and phone number",
+    "findNotFound": "Order not found. Check the order number and phone.",
+    "findTitle": "Find order",
+    "findText": "Enter the order number and the phone you used when placing the order.",
+    "orderNumber": "Order number",
+    "searching": "Searching...",
+    "findButton": "Find",
+    "whereNumber": "The order number is on the receipt and on the page that opened after checkout.",
+    "savedOrders": "Your orders on this device",
+    "receiptError": "Could not download the receipt. Please try again later.",
+    "copied": "Order number copied",
+    "order": "Order",
+    "notFound": "Order not found",
+    "notFoundHint": "Check the link or find the order by number and phone.",
+    "copy": "Copy",
+    "details": "Order details",
+    "date": "Date",
+    "deliveryMethod": "Receiving",
+    "items": "Items",
+    "downloading": "Downloading...",
+    "downloadReceipt": "Download receipt",
+    "saveHint": "Save the receipt — you will need it to receive your order",
+    "breadcrumbSuccess": "Order placed",
+    "successTitle": "Order placed!",
+    "successCash": "Thank you! Our manager will contact you soon.",
+    "successText": "Thank you for your purchase!",
+    "viewOrder": "View order",
+    "nextTitle": "What's next?",
+    "next1Title": "Save the receipt",
+    "next1Text": "Download it or take a screenshot of the order number",
+    "next2Title": "Wait for a call",
+    "next2Text": "A manager will contact you to confirm the order",
+    "next3Title": "Receive your order",
+    "next3Text": "Show the receipt or tell us the order number",
+    "toHome": "Go to home page",
+    "product": "Product",
+    "searchAnother": "Find another order",
+    "statuses": {
+      "new": "New",
+      "pending": "Awaiting payment",
+      "processing": "Processing",
+      "paid": "Paid",
+      "paid_with_bonus": "Paid with points",
+      "in_stock": "In stock",
+      "assembling": "Being assembled",
+      "ready": "Ready for pickup",
+      "shipped": "Shipped",
+      "delivering": "Out for delivery",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "canceled": "Cancelled",
+      "returned": "Returned",
+      "awaiting_payment": "Awaiting payment",
+      "expired": "Cancelled (not paid)"
+    },
+    "myOrders": "All my orders in my account",
+    "loginToView": "Sign in to your account",
+    "loginToViewText": "This order was placed from an account. Sign in to view it.",
+    "payment": {
+      "paid": "Paid",
+      "bonus": "Paid with points",
+      "cash": "Cash on receipt",
+      "awaiting": "Awaiting payment",
+      "unknownHint": "If you have already paid for the order, you don't need to pay again.",
+      "expired": "Not paid in time"
+    },
+    "productRemoved": "Product discontinued",
+    "notFoundSaved": "This order is in the list on this device, but the server could not find it. It may have been deleted or placed from another account.",
+    "removeFromList": "Remove from list",
+    "deadline": {
+      "payUntil": "Pay by",
+      "left": "left",
+      "expired": "Payment deadline has passed",
+      "expiredText": "The order was cancelled because it was not paid in time. Please place a new order from your cart.",
+      "removedText": "The order was deleted because it was not paid in time. Please place a new order from your cart.",
+      "d": "d",
+      "h": "h",
+      "m": "min",
+      "s": "sec",
+      "leftToPay": "Time left to pay",
+      "payBy": "Pay by",
+      "otherwise": ", otherwise the order will be cancelled.",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "at": "at"
+    },
+    "myOrdersButton": "All my orders",
+    "myOrdersTitle": "My orders",
+    "backToList": "Back to list",
+    "myOrdersEmpty": "You have no orders yet",
+    "myOrdersError": "Could not load orders. Please try again later.",
+    "openInProfile": "Open in my account",
+    "deviceOrdersButton": "My orders on this device",
+    "deviceOrdersTitle": "My orders on this device",
+    "deviceOrdersEmpty": "There are no orders on this device yet",
+    "goToProfile": "Go to my account",
+    "authRequiredText": "You are not signed in yet. Sign in or register to open your account."
   },
   "brands": {
     "hivideo": "Security systems",
@@ -1448,64 +1613,6 @@
       "subtitle": "We will calculate the cost of the project and connect at any stage of implementation"
     }
   },
-  "industrialLighting": {
-    "breadcrumb": {
-      "solutions": "Solutions",
-      "electricalEquipment": "Electrical Equipment",
-      "current": "Industrial Lighting"
-    },
-    "title": "Modern Industrial Lighting Systems",
-    "subtitle": "We provide lighting and monitoring for critical communication and security systems",
-    "links": {
-      "cableSystems": "Cable Support Systems",
-      "powerSupply": "Power Supply Systems",
-      "monitoring": "Monitoring and Control"
-    },
-    "armtelDescription": "Own brand of equipment for building reliable communication and security systems: voice alarm, dispatch, operational-technological communication, notification and other related engineering networks",
-    "features": [
-      {
-        "title": "Ensuring scalability and consistently high quality",
-        "text": "Our own production facility allows us to produce large volumes of products and complete projects in a short time without losing quality"
-      },
-      {
-        "title": "Implementing a comprehensive approach",
-        "text": "Full cycle of work: from solution development and design to supply, installation, commissioning and technical support"
-      },
-      {
-        "title": "Adapting solutions to your business needs",
-        "text": "Many years of experience of our engineering center allows us to provide professional assistance in implementing non-standard and complex project solutions"
-      },
-      {
-        "title": "Taking responsibility at all stages of the life cycle",
-        "text": "We fulfill obligations during the warranty period and provide service and post-warranty maintenance for long-term system performance"
-      }
-    ],
-    "systemsTitle": "Lighting Systems",
-    "systemsSubtitle": "for various enterprise systems and tasks",
-    "lightingSystems": [
-      {
-        "label": "Main, emergency and evacuation lighting systems"
-      },
-      {
-        "label": "Security and perimeter lighting systems"
-      },
-      {
-        "label": "Intelligent addressable lighting monitoring and control systems"
-      }
-    ],
-    "checklistItems": [
-      "Use of specialized materials in equipment",
-      "Wide range of supply voltage, protection against surges and voltage drops",
-      "Various equipment lines – from budget to high-tech",
-      "Possibility of creating individual 'customizable' configuration/execution",
-      "Equipment can operate in extremely harsh conditions (extreme temperatures, chemically aggressive environments and much more)",
-      "Warranty – 5 years"
-    ],
-    "footer": {
-      "title": "Move from disparate devices to a unified communication ecosystem",
-      "subtitle": "We will calculate the cost of the project and connect at any stage of implementation"
-    }
-  },
   "powerSupply": {
     "breadcrumb": {
       "solutions": "Solutions",
@@ -1928,10 +2035,22 @@
     "controlTitle": "Control over any access points",
     "controlSubtitle": "Office premises, industrial sites and facilities",
     "accessPoints": [
-      { "label": "Doors", "icon": "door" },
-      { "label": "Turnstiles", "icon": "turnstile" },
-      { "label": "Air Locks", "icon": "gate" },
-      { "label": "Checkpoints", "icon": "checkpoint" }
+      {
+        "label": "Doors",
+        "icon": "door"
+      },
+      {
+        "label": "Turnstiles",
+        "icon": "turnstile"
+      },
+      {
+        "label": "Air Locks",
+        "icon": "gate"
+      },
+      {
+        "label": "Checkpoints",
+        "icon": "checkpoint"
+      }
     ],
     "toolTitle": "Access Control System — a tool for crisis management and business efficiency growth",
     "securityTitle": "Improving security level:",
@@ -2624,40 +2743,7 @@
     "footer": {
       "title": "Move from disparate devices to a unified communication ecosystem",
       "subtitle": "We will calculate the cost of the project and connect at any stage of implementation"
-    }
-  },
-  "objectNotification": {
-    "breadcrumb": {
-      "solutions": "Solutions",
-      "industrialCommunication": "Industrial Communication and Notification",
-      "current": "Facility and Local Notification"
     },
-    "title": "Facility and Local Notification",
-    "subtitle": "Building fault-tolerant communication systems for monitoring, process management and instant personnel notification in extreme industrial conditions.",
-    "armtelTitle": "Armtel software and hardware complex — a hub for seamless integration of all communication and notification channels",
-    "features": [
-      "Provides instant direct communication for technological process and personnel management.",
-      "Allows implementing several systems on the basis of one equipment."
-    ],
-    "durabilityTitle": "Armtel system is resistant to harsh industrial conditions",
-    "durabilityItems": [
-      {
-        "icon": "ex",
-        "text": "Explosion-proof design for zones 1 and 2"
-      },
-      {
-        "icon": "chemistry",
-        "text": "Housings resistant to chemicals and abrasives"
-      },
-      {
-        "icon": "shield",
-        "text": "High degree of enclosure protection"
-      },
-      {
-        "icon": "audio",
-        "text": "Active and passive noise reduction"
-      }
-    ],
     "dispatchTitle": "Dispatch Communication",
     "dispatchSubtitle": "Provides instant information exchange between employees and management",
     "dispatchImageAlt": "Dispatch communication diagram",
@@ -2696,116 +2782,6 @@
         "text": "public address and notification in a single interface"
       }
     ],
-    "standardsTitle": "Armtel-Info complies with all necessary regulatory requirements",
-    "standards": [
-      "GOST R 22.7.05-2022 National Standard of the Russian Federation. Safety in emergency situations. Local notification systems in areas of potentially dangerous facilities. General requirements.",
-      "GOST R 42.3.01-2021 \"Civil Defense. Technical means of public notification. Classification. General technical requirements\"",
-      "Order of the Ministry of Emergency Situations of Russia and the Ministry of Digital Development dated 07/31/2020 No. 578/365 \"On approval of the Regulation on public notification systems\""
-    ],
-    "catalogTitle": "Full life cycle management of systems",
-    "catalogButton": "Armtel Catalog (.pdf)",
-    "products": [
-      {
-        "title": "Explosion-proof intercom device DWEx",
-        "image": "https://arman-engineering.ru/assets/images/sections/solutions/svyaz/armtel_product_2.png",
-        "imageWidth": "w-40",
-        "ex": true,
-        "description": "Suitable for zones 1 and 2\n1Ex d e ib IIC T6 Gb\nEx tb IIIC T85°C Db",
-        "specs": [
-          {
-            "label": "Resistance to harsh conditions",
-            "text": "From -60°C to +70°C"
-          },
-          {
-            "label": "Active noise reduction",
-            "text": "Digital sound cleaning for intelligible speech and echo suppression"
-          },
-          {
-            "label": "Dust and moisture protection",
-            "text": "Protection against dust, sand, water and icing"
-          },
-          {
-            "label": "Chemical and corrosion protection",
-            "text": "Resistance to acids, alkalis, ammonia and alcohol"
-          }
-        ]
-      },
-      {
-        "title": "Explosion-proof horn loudspeaker AR-25Ex",
-        "image": "https://arman-engineering.ru/assets/images/sections/solutions/svyaz/armtel_product_1.png",
-        "imageWidth": "w-48",
-        "ex": true,
-        "description": "Zones 1, 2, 20, 21, 22\n1Ex d e mb IIB T4 Gb\nEx tb mb IIIC T135°C Db",
-        "specs": [
-          {
-            "label": "Climatic resistance",
-            "text": "Complies with GOST 15150-69 (UHL1)"
-          },
-          {
-            "label": "Open areas",
-            "text": "Resistance to frost, ice and heavy condensation"
-          },
-          {
-            "label": "Dust and moisture protection",
-            "text": "Protection against fine dust, sand and moisture"
-          },
-          {
-            "label": "Flexible settings",
-            "text": "Adapts to complex architectural and acoustic tasks"
-          }
-        ]
-      },
-      {
-        "title": "Integrated communication panel TOP-PAD-IP2",
-        "image": "https://arman-engineering.ru/assets/images/sections/solutions/svyaz/armtel_product_3.png",
-        "imageWidth": "w-52",
-        "icon": "lan",
-        "description": "Industrial IP interface\nNetwork integration and redundancy\nDispatch communication",
-        "specs": [
-          {
-            "label": "Dust and moisture protection",
-            "text": "Resistance to industrial dust and pollution"
-          },
-          {
-            "label": "Fault tolerance",
-            "text": "2 Ethernet ports for reliable communication redundancy"
-          },
-          {
-            "label": "Flexible configuration",
-            "text": "Up to 224 virtual speed dial keys"
-          },
-          {
-            "label": "HD sound quality",
-            "text": "Wide sound frequency range up to 14 kHz"
-          }
-        ]
-      },
-      {
-        "title": "Sound and light signaling device",
-        "image": "https://arman-engineering.ru/assets/images/sections/solutions/svyaz/armtel_product_4.png",
-        "imageWidth": "w-40",
-        "icon": "bell",
-        "description": "Sound and light emergency notification\nIntegration with third-party fire alarm sensors\nInstant optical emergency indication",
-        "specs": [
-          {
-            "label": "Moderately cold climate",
-            "text": "Complies with GOST 15150-69 (UHL1)"
-          },
-          {
-            "label": "Outdoor operation",
-            "text": "Absolute resistance to frost, ice and condensation"
-          },
-          {
-            "label": "Dust and moisture protection",
-            "text": "Maximum isolation from aggressive external environment"
-          },
-          {
-            "label": "Loud signal",
-            "text": "High sound pressure for noisy workshops"
-          }
-        ]
-      }
-    ],
     "softwareTitle": "Software for correct configuration and operation",
     "softwareSubtitle": "All components of the Armtel system work in a single secure environment — there is no risk of software incompatibility or vulnerabilities at the interfaces of different systems.",
     "softwareItems": [
@@ -2839,11 +2815,7 @@
         "alt": "DCN Monitoring System software suite",
         "label": "DCN Monitoring System software suite"
       }
-    ],
-    "footer": {
-      "title": "Move from disparate devices to a unified communication ecosystem",
-      "subtitle": "We will calculate the cost of the project and connect at any stage of implementation"
-    }
+    ]
   },
   "industrialCommunication": {
     "breadcrumb": {
@@ -2860,13 +2832,22 @@
     ],
     "durabilityTitle": "Armtel system is resistant to harsh industrial conditions",
     "durabilityItems": [
-      { "icon": "ex", "text": "Explosion-proof design for zones 1 and 2" },
+      {
+        "icon": "ex",
+        "text": "Explosion-proof design for zones 1 and 2"
+      },
       {
         "icon": "chemistry",
         "text": "Housings resistant to chemicals and abrasives"
       },
-      { "icon": "shield", "text": "High degree of enclosure protection" },
-      { "icon": "audio", "text": "Active and passive noise reduction" }
+      {
+        "icon": "shield",
+        "text": "High degree of enclosure protection"
+      },
+      {
+        "icon": "audio",
+        "text": "Active and passive noise reduction"
+      }
     ],
     "dispatchTitle": "Dispatch Communication",
     "dispatchSubtitle": "Provides instant information exchange between employees and management",
@@ -2984,7 +2965,10 @@
             "label": "Flexible configuration",
             "text": "Up to 274 virtual buttons, up to 84 physical"
           },
-          { "label": "HD audio quality", "text": "Frequency up to 14 kHz" }
+          {
+            "label": "HD audio quality",
+            "text": "Frequency up to 14 kHz"
+          }
         ]
       },
       {

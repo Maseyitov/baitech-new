@@ -11,7 +11,6 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { HiOutlineShoppingCart } from "react-icons/hi";
-import { IoCartOutline, IoClose } from "react-icons/io5";
 import { IoLanguageOutline } from "react-icons/io5";
 import { FaWhatsapp, FaInstagram } from "react-icons/fa";
 import Link from "next/link";
@@ -35,7 +34,6 @@ export default function Header() {
   const [isAuth, setIsAuth] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isContactsOpen, setIsContactsOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -100,13 +98,6 @@ export default function Header() {
       setIsOpen(!isOpen);
     } else {
       router.push("/login");
-    }
-  };
-
-  const handleCartClick = (event) => {
-    if (!getStoredToken()) {
-      event.preventDefault();
-      setShowAuthModal(true);
     }
   };
 
@@ -337,7 +328,7 @@ export default function Header() {
             </a>
           )}
 
-          <Link href="/korzina" onClick={handleCartClick}>
+          <Link href="/korzina">
             <div className="relative">
               <HiOutlineShoppingCart />
               {items.length > 0 && (
@@ -364,44 +355,6 @@ export default function Header() {
             autoFocus
             onDone={() => setIsMobileSearchOpen(false)}
           />
-        </div>
-      )}
-
-      {showAuthModal && (
-        <div
-          className="auth-modal__overlay"
-          onClick={() => setShowAuthModal(false)}
-        >
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="auth-modal__close"
-              onClick={() => setShowAuthModal(false)}
-              aria-label="Закрыть"
-            >
-              <IoClose size={20} />
-            </button>
-            <div className="auth-modal__icon">
-              <IoCartOutline size={48} />
-            </div>
-            <h3 className="auth-modal__title">{t("auth.modal.title")}</h3>
-            <p className="auth-modal__text">{t("auth.modal.description")}</p>
-            <div className="auth-modal__actions">
-              <Link
-                href="/register"
-                className="auth-modal__btn auth-modal__btn--primary"
-                onClick={() => setShowAuthModal(false)}
-              >
-                {t("auth.modal.register")}
-              </Link>
-              <Link
-                href="/login"
-                className="auth-modal__btn auth-modal__btn--secondary"
-                onClick={() => setShowAuthModal(false)}
-              >
-                {t("auth.modal.login")}
-              </Link>
-            </div>
-          </div>
         </div>
       )}
     </header>

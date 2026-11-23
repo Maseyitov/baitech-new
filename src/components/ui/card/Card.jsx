@@ -51,15 +51,15 @@ function Card({ product }) {
   const { mutate: deleteFromCart } = useDeleteCartItem();
   const { data: cartItems } = useCart();
   const { settings } = useSiteSettings();
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const productId = product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
+  const productId =
+    product?.id ?? product?.pk ?? product?.product_id ?? product?.product?.id;
   const productDetailPath = productId
     ? `/productdetail/${encodeURIComponent(String(productId))}`
     : "#";
   const cartItem = cartItems?.find(
-    (item) => item.product?.id === productId || item.product_id === productId
+    (item) => item.product?.id === productId || item.product_id === productId,
   );
   const isInCart = !!cartItem;
   const imageSrc = product?.existing_images?.[0]?.image || PRODUCT_PLACEHOLDER;
@@ -67,32 +67,40 @@ function Card({ product }) {
   const discount = Number(product?.discount || 0);
   const hasDiscount = discount > 0;
   const numericPrice =
-    product?.price === null || product?.price === undefined || product?.price === ""
+    product?.price === null ||
+    product?.price === undefined ||
+    product?.price === ""
       ? null
       : Number(product.price);
   const formattedPrice = Number.isFinite(numericPrice)
     ? numericPrice.toLocaleString("ru-RU", { maximumFractionDigits: 0 })
     : "-";
-  const isHighPrice = Number.isFinite(numericPrice) && numericPrice >= HIGH_PRICE_LIMIT;
+  const isHighPrice =
+    Number.isFinite(numericPrice) && numericPrice >= HIGH_PRICE_LIMIT;
   // Товар без цены (или с ценой 0) продаётся только за бонусные баллы
   const isBonusOnly = !(numericPrice > 0);
 
   const whatsappMessage = isHighPrice
-    ? "Здравствуйте! Интересует товар: " + (product?.name || "-") + ", артикул: " + (product?.article || "-") + "."
-    : "Здравствуйте! Интересует товар: " + (product?.name || "-") + ", артикул: " + (product?.article || "-") + ", цена: " + formattedPrice + " сом.";
-  const whatsappLink = buildWhatsAppLink(settings?.whatsapp, settings?.phone, whatsappMessage);
+    ? "Здравствуйте! Интересует товар: " +
+      (product?.name || "-") +
+      ", артикул: " +
+      (product?.article || "-") +
+      "."
+    : "Здравствуйте! Интересует товар: " +
+      (product?.name || "-") +
+      ", артикул: " +
+      (product?.article || "-") +
+      ", цена: " +
+      formattedPrice +
+      " сом.";
+  const whatsappLink = buildWhatsAppLink(
+    settings?.whatsapp,
+    settings?.phone,
+    whatsappMessage,
+  );
 
   const handleAddToCart = () => {
     if (!productId) return;
-    const token =
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("accessToken") ||
-      localStorage.getItem("accesToken") ||
-      localStorage.getItem("acces_token");
-    if (!token) {
-      setShowAuthModal(true);
-      return;
-    }
     if (isInCart) {
       deleteFromCart(cartItem.id);
     } else {
@@ -102,7 +110,11 @@ function Card({ product }) {
 
   const handleCardClick = (event) => {
     const target = event.target;
-    if (target.closest("a, button, input, textarea, select, label, [role='button']")) {
+    if (
+      target.closest(
+        "a, button, input, textarea, select, label, [role='button']",
+      )
+    ) {
       return;
     }
     if (productId) {
@@ -154,7 +166,7 @@ function Card({ product }) {
                 setShowImageModal(true);
               }}
             >
-              <IoEyeOutline size={18} /> 
+              <IoEyeOutline size={18} />
             </button>
             {imageSrc ? (
               <Image
@@ -170,8 +182,19 @@ function Card({ product }) {
             ) : (
               <div className="image-placeholder">
                 <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-                  <circle cx="50" cy="40" r="15" stroke="#ccc" strokeWidth="2" />
-                  <path d="M30 80 Q50 60 70 80" stroke="#ccc" strokeWidth="2" fill="none" />
+                  <circle
+                    cx="50"
+                    cy="40"
+                    r="15"
+                    stroke="#ccc"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M30 80 Q50 60 70 80"
+                    stroke="#ccc"
+                    strokeWidth="2"
+                    fill="none"
+                  />
                 </svg>
               </div>
             )}
@@ -185,14 +208,14 @@ function Card({ product }) {
           {product.name}
         </h3>
 
-        <p className="product-card__features">
-          {product.description}
-        </p>
+        <p className="product-card__features">{product.description}</p>
 
         <div className="product-card__footer">
           {isHighPrice ? (
             <div className="product-card__contact-price">
-              <p className="product-card__contact-title">{t("card.contactForPrice")}</p>
+              <p className="product-card__contact-title">
+                {t("card.contactForPrice")}
+              </p>
               {whatsappLink && (
                 <a
                   href={whatsappLink}
@@ -210,7 +233,8 @@ function Card({ product }) {
               <div className="product-card__price">
                 {isBonusOnly ? (
                   <span className="amount product-card__price--bonus">
-                    {product.bonus_price ?? 0} {t("card.bonusPoints", t('ball'))}
+                    {product.bonus_price ?? 0}{" "}
+                    {t("card.bonusPoints", t("ball"))}
                   </span>
                 ) : (
                   <>
@@ -234,7 +258,9 @@ function Card({ product }) {
             </>
           ) : (
             <a
-              href={whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone}`}
+              href={
+                whatsappLink ?? settings?.whatsapp ?? `tel:${settings?.phone}`
+              }
               target="_blank"
               rel="noreferrer"
               className="product-card__availability-btn"
@@ -243,7 +269,6 @@ function Card({ product }) {
             </a>
           )}
         </div>
-
 
         {!isAvailable && !isHighPrice && whatsappLink ? (
           <a
@@ -260,8 +285,14 @@ function Card({ product }) {
 
       {mounted && showImageModal
         ? createPortal(
-            <div className="product-card__preview-overlay" onClick={() => setShowImageModal(false)}>
-              <div className="product-card__preview-modal" onClick={(event) => event.stopPropagation()}>
+            <div
+              className="product-card__preview-overlay"
+              onClick={() => setShowImageModal(false)}
+            >
+              <div
+                className="product-card__preview-modal"
+                onClick={(event) => event.stopPropagation()}
+              >
                 <button
                   type="button"
                   className="product-card__preview-close"
@@ -283,32 +314,9 @@ function Card({ product }) {
                 )}
               </div>
             </div>,
-            document.body
+            document.body,
           )
         : null}
-
-      {showAuthModal && (
-        <div className="auth-modal__overlay" onClick={() => setShowAuthModal(false)}>
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="auth-modal__close" onClick={() => setShowAuthModal(false)} aria-label="Закрыть">
-              <IoClose size={20} />
-            </button>
-            <div className="auth-modal__icon">
-              <IoCartOutline size={48} />
-            </div>
-            <h3 className="auth-modal__title">{t("auth.modal.title")}</h3>
-            <p className="auth-modal__text">{t("auth.modal.description")}</p>
-            <div className="auth-modal__actions">
-              <Link href="/register" className="auth-modal__btn auth-modal__btn--primary" onClick={() => setShowAuthModal(false)}>
-                {t("auth.modal.register")}
-              </Link>
-              <Link href="/login" className="auth-modal__btn auth-modal__btn--secondary" onClick={() => setShowAuthModal(false)}>
-                {t("auth.modal.login")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

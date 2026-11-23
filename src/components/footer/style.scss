@@ -88,6 +88,26 @@ footer,
   margin-top: 1px;
 }
 
+.footer__item--address span,
+.footer__item--phones .footer__phone-number {
+  white-space: nowrap;
+}
+
+.footer__item--address span {
+  font-size: clamp(11px, 1.1vw, 14px);
+}
+
+.footer__item.footer__item--phones .footer__phone-number {
+  font-size: clamp(12px, 1.1vw, 14px);
+}
+
+@media (max-width: 780px) {
+  .footer__item--address span,
+  .footer__item.footer__item--phones .footer__phone-number {
+    font-size: 14px;
+  }
+}
+
 /* === SOCIALS === */
 .footer__socials {
   display: flex;

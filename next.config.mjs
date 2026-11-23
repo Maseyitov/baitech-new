@@ -67,6 +67,13 @@ const nextConfig = {
       { source: "/распределительная-коробка", destination: "/catalog/networking", permanent: true },
     ];
   },
+
+    async rewrites() {
+    return [
+      { source: "/backend/:path*", destination: "https://baitech.kg/:path*/" },
+    ];
+  },
+
   images: {
     unoptimized: true,
     qualities: [75, 80],
