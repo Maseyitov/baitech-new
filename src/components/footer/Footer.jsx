@@ -1,6 +1,6 @@
 "use client";
 import "./style.scss";
-import logo from "../../../assets/svg/Байтех лого 2 1.svg";
+import logo from "../../../assets/svg/baitech-logo.svg";
 import finik from "../../../assets/svg/Logo Purple 1.svg";
 import mbank from "../../../assets/svg/Component 19.svg";
 import optima from "../../../assets/svg/image-removebg-preview (6) 1.svg";

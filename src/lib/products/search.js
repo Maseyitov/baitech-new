@@ -82,6 +82,147 @@ Object.values(SEARCH_SYNONYMS).forEach((group) => {
 
 const getVariants = (token) => SYNONYM_LOOKUP.get(token) || [token];
 
+// ─── Модели оборудования: DS-2CD1023G2-I, VIGI C440, DH-IPC-HFW1430DS1-SAW ──
+// Модель сравнивается в «сжатом» виде: без дефисов, пробелов, слэшей и точек,
+// русские буквы-двойники заменены латинскими. DS-2CD1023G2-I → ds2cd1023g2i.
+// Поэтому «ds2cd1023», «DS 2CD1023» и «DS-2СD1023» (с русской С) находят одно и то же.
+
+const HOMOGLYPHS = {
+  а: "a",
+  в: "b",
+  е: "e",
+  ё: "e",
+  к: "k",
+  м: "m",
+  н: "h",
+  о: "o",
+  р: "p",
+  с: "c",
+  т: "t",
+  у: "y",
+  х: "x",
+};
+const HOMOGLYPH_RE = /[авеёкмнорстух]/g;
+
+const compactCode = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(HOMOGLYPH_RE, (ch) => HOMOGLYPHS[ch])
+    .replace(/[^a-z0-9]+/g, "");
+
+// Характеристики, а не модели: 4MP, 2.8mm, 30m, 1080P, IP67, IK08, H.265, 220VAC…
+const SPEC_PATTERNS = [
+  /^\d+(mp|mpx|mm|cm|m|km|p|k|g|gb|tb|mb|kb|w|kw|v|vac|vdc|a|ah|mah|wh|hz|khz|mhz|ghz|db|dbi|ch|fps|lm|lux|s|ms|x|bit|mbps|gbps|kg|port|ports|pin|u|ru|inch|core|th|c)$/,
+  /^ip\d{2}$/,
+  /^ik\d{2}$/,
+  /^h26[45]p?$/,
+  /^\d+x\d+[a-z]*$/,
+  /^i?r\d+m?$/,
+  /^(usb|ddr|lpddr|gddr|pcie|wifi|cat|rj|hdmi|bt|lte|dc)\d+[a-z]*$/,
+];
+const isSpec = (key) => SPEC_PATTERNS.some((re) => re.test(key));
+
+// Кусок текста → ключ модели, или null, если это не модель
+const toModelKey = (chunk) => {
+  const raw = String(chunk || "");
+  const latin = (raw.match(/[a-z]/gi) || []).length;
+  const cyrillic = (raw.match(/[а-яё]/gi) || []).length;
+  // «8-портовый», «камера4» — обычные русские слова, а не модели
+  if (cyrillic >= 3 && cyrillic >= latin) return null;
+  const key = compactCode(raw);
+  if (key.length < 2 || !/[a-z]/.test(key) || !/\d/.test(key)) return null;
+  if (isSpec(key)) return null;
+  return key;
+};
+
+const trimEdges = (value) =>
+  String(value || "").replace(/^[^a-zа-яё0-9]+|[^a-zа-яё0-9]+$/gi, "");
+
+// Слова, после которых модель — это не модель самого товара, а упоминание:
+// «Кронштейн для DS-2CD1023G2-I», «Блок питания под C440», «совместим с …»
+const REFERENCE_WORD_RE =
+  /^(для|под|к|ко|совместим[а-яё]*|подходит|аналог[а-яё]*|вместо|замена|for|compatible|fits)$/i;
+
+// Достаём модели из названия: [{ key: "ds2cd1023g2i", raw: "DS-2CD1023G2-I", ref: false }]
+// ref: true — модель только упоминается («для DS-2CD1023G2-I»)
+const extractModels = (texts) => {
+  const found = new Map();
+  let isReference = false;
+  const add = (rawChunk) => {
+    const raw = trimEdges(rawChunk);
+    const key = toModelKey(raw);
+    if (!key) return;
+    const existing = found.get(key);
+    // Если где-то модель своя, а где-то упоминание — считаем своей
+    if (!existing) found.set(key, { raw, ref: isReference });
+    else if (existing.ref && !isReference) existing.ref = false;
+  };
+
+  texts.forEach((text) => {
+    isReference = false;
+    String(text || "")
+      .split(/[\s,;]+/)
+      .forEach((chunk) => {
+        if (REFERENCE_WORD_RE.test(trimEdges(chunk))) {
+          isReference = true;
+          return;
+        }
+        // «4MP/2.8mm» — это характеристики через слэш, разбираем по частям.
+        // «DS-TMG320-LR/В» — это одна модель, оставляем целиком.
+        const parts = chunk.split("/");
+        const hasSpecPart =
+          parts.length > 1 &&
+          parts.some((part) => {
+            const key = compactCode(part);
+            return key && isSpec(key);
+          });
+        if (hasSpecPart) parts.forEach(add);
+        else add(chunk);
+      });
+  });
+
+  return [...found].map(([key, { raw, ref }]) => ({ key, raw, ref }));
+};
+
+// Разбор запроса: какие части — модели, какие — обычные слова
+const parseModelQuery = (keywords) => {
+  const chunks = String(keywords || "")
+    .split(/\s+/)
+    .filter(Boolean);
+  const modelKeys = [];
+  const modelChunks = [];
+  const textChunks = [];
+
+  chunks.forEach((chunk) => {
+    const key = toModelKey(trimEdges(chunk));
+    if (key) {
+      modelKeys.push(key);
+      modelChunks.push(chunk);
+    } else {
+      textChunks.push(chunk);
+    }
+  });
+
+  // «DS 2CD 1023» — модель, набранная через пробелы. Пробуем склеить.
+  let joinedKey = null;
+  if (
+    chunks.length >= 2 &&
+    chunks.length <= 4 &&
+    chunks.every((chunk) => !/[а-яё]{2,}/i.test(chunk))
+  ) {
+    const key = toModelKey(chunks.join(""));
+    if (key && !modelKeys.includes(key)) joinedKey = key;
+  }
+
+  return {
+    modelKeys,
+    modelChunks,
+    joinedKey,
+    textChunks,
+    tokens: splitTokens(textChunks.join(" ")),
+  };
+};
+
 // ─── Разбор цены: «до 5000», «от 2к до 10к», «дешевле 3 тыс» ────────────────
 
 const NUMBER_TOKEN = "[\\d]+(?:[.,]\\d+)?\\s*(?:к|k|тыс\\.?)?";
@@ -321,6 +462,21 @@ const getIndex = (products, categoriesById, brandsById) => {
       ),
     ];
     const brandRaw = getBrandName(product, brandsById);
+    const modelSources = [...names];
+    if (typeof product?.model === "string" && product.model.trim()) {
+      modelSources.unshift(product.model); // если бэк отдаёт отдельное поле модели
+    }
+    const models = extractModels(modelSources);
+    if (typeof product?.model === "string") {
+      const wholeKey = toModelKey(product.model);
+      if (wholeKey && !models.some((m) => m.key === wholeKey)) {
+        models.unshift({
+          key: wholeKey,
+          raw: product.model.trim(),
+          ref: false,
+        });
+      }
+    }
     const doc = {
       product,
       name: normalizeText(names.join(" ")),
@@ -328,6 +484,10 @@ const getIndex = (products, categoriesById, brandsById) => {
       brand: normalizeText(brandRaw),
       brandRaw,
       category: normalizeText(getCategoryName(product, categoriesById)),
+      models,
+      modelKeys: models.filter((m) => !m.ref).map((m) => m.key),
+      refModelKeys: models.filter((m) => m.ref).map((m) => m.key),
+      compactName: compactCode(names.join(" ")),
     };
     doc.haystack = ` ${doc.name} ${doc.article} ${doc.brand} ${doc.category} `;
     return doc;
@@ -340,6 +500,7 @@ const getIndex = (products, categoriesById, brandsById) => {
     fuse: new Fuse(docs, FUSE_OPTIONS),
     vocabulary: null, // строится лениво — нужен только для исправления опечаток
     phrases: null, // строится лениво — нужен только для подсказок
+    modelPhrases: null, // строится лениво — модели для подсказок
   };
 
   indexCache.set(products, index);
@@ -420,6 +581,109 @@ const runSearch = (index, tokens) => {
   return ranked.map((item) => item.doc.product);
 };
 
+// ─── Поиск по модели ─────────────────────────────────────────────────────────
+// Оценки сильно меньше обычных, поэтому совпадение модели всегда выше:
+//   -30  модель совпала целиком
+//   -20  модель начинается с запроса    (ds2cd1023  → DS-2CD1023G2-I)
+//   -10  запрос внутри модели           (1023g2     → DS-2CD1023G2-I)
+//    -5  запрос найден в названии без учёта разделителей
+// Если модель только упоминается («Кронштейн для DS-2CD1023G2-I»), оценка
+// хуже на 25 — такой товар окажется ниже самой камеры, но выше остального.
+// Чем меньше «лишних» символов в модели, тем выше товар.
+
+const scoreModelList = (modelKeys, key) => {
+  let best;
+  for (const modelKey of modelKeys) {
+    let score;
+    if (modelKey === key) return -30;
+    if (modelKey.startsWith(key)) {
+      score = -20 + Math.min(modelKey.length - key.length, 90) * 0.01;
+    } else if (key.length >= 4 && modelKey.includes(key)) {
+      score = -10 + Math.min(modelKey.length - key.length, 90) * 0.01;
+    }
+    if (score !== undefined && (best === undefined || score < best)) {
+      best = score;
+    }
+  }
+  return best;
+};
+
+const scoreModel = (doc, key) => {
+  const own = scoreModelList(doc.modelKeys, key);
+  if (own !== undefined) return own;
+  const ref = scoreModelList(doc.refModelKeys, key);
+  if (ref !== undefined) return ref + 25;
+  if (key.length >= 4 && doc.compactName.includes(key)) return -5;
+  return undefined;
+};
+
+// Товар подходит, только если совпали ВСЕ модели из запроса и ВСЕ обычные слова
+const runModelSearch = (index, modelKeys, tokens) => {
+  const tokenMaps = tokens.map((token) => scoreToken(index, token));
+  const ranked = [];
+
+  for (const doc of index.docs) {
+    let total = 0;
+    let matched = true;
+
+    for (const key of modelKeys) {
+      const score = scoreModel(doc, key);
+      if (score === undefined) {
+        matched = false;
+        break;
+      }
+      total += score;
+    }
+    if (!matched) continue;
+
+    for (const map of tokenMaps) {
+      const score = map.get(doc);
+      if (score === undefined) {
+        matched = false;
+        break;
+      }
+      total += score;
+    }
+    if (matched) ranked.push({ doc, total });
+  }
+
+  return ranked;
+};
+
+const byRelevance = (a, b) => {
+  if (a.total !== b.total) return a.total - b.total;
+  // При равной релевантности — сначала товары в наличии
+  const availA = a.doc.product?.is_available === false ? 1 : 0;
+  const availB = b.doc.product?.is_available === false ? 1 : 0;
+  return availA - availB;
+};
+
+// Полный поиск: сначала точные совпадения модели, ниже — всё остальное,
+// что нашёл обычный поиск (похожие модели, совпадения по словам)
+const searchAll = (index, keywords) => {
+  const { modelKeys, joinedKey, tokens } = parseModelQuery(keywords);
+  const loose = runSearch(index, splitTokens(keywords));
+  if (modelKeys.length === 0 && !joinedKey) return loose;
+
+  const best = new Map();
+  const collect = (items) =>
+    items.forEach(({ doc, total }) => {
+      const prev = best.get(doc);
+      if (prev === undefined || total < prev) best.set(doc, total);
+    });
+
+  if (joinedKey) collect(runModelSearch(index, [joinedKey], []));
+  if (modelKeys.length) collect(runModelSearch(index, modelKeys, tokens));
+
+  const strict = [...best]
+    .map(([doc, total]) => ({ doc, total }))
+    .sort(byRelevance)
+    .map((item) => item.doc.product);
+
+  const seen = new Set(strict);
+  return [...strict, ...loose.filter((product) => !seen.has(product))];
+};
+
 // ─── «Возможно, вы имели в виду» ────────────────────────────────────────────
 
 const getVocabulary = (index) => {
@@ -427,7 +691,9 @@ const getVocabulary = (index) => {
     const words = new Set();
     index.docs.forEach((doc) => {
       `${doc.name} ${doc.brand} ${doc.category}`.split(" ").forEach((word) => {
-        if (word.length >= 3 && !/^\d+$/.test(word)) words.add(word);
+        // слова с цифрами (модели, 4mp, 2cd1023g2) в словарь не берём —
+        // иначе одну модель можно «исправить» на другую
+        if (word.length >= 3 && !/\d/.test(word)) words.add(word);
       });
     });
     const list = [...words];
@@ -448,7 +714,7 @@ const correctTokens = (index, tokens) => {
   let changed = false;
 
   const corrected = tokens.map((token) => {
-    if (token.length < 3 || /^\d+$/.test(token)) return token;
+    if (token.length < 3 || /\d/.test(token)) return token;
     if (vocab.set.has(token) || SYNONYM_LOOKUP.has(token)) return token;
     const [best] = vocab.fuse.search(token);
     if (best && best.score <= 0.45) {
@@ -520,14 +786,14 @@ export const searchProductsSmart = (products, query, options = EMPTY_MAP) => {
   const tokens = splitTokens(intent.keywords);
   const index = getIndex(list, categoriesById, brandsById);
 
-  let results = runSearch(index, tokens);
+  let results = searchAll(index, intent.keywords);
   let correctedQuery = null;
   let correction = null;
 
   if (results.length === 0 && tokens.length > 0) {
     // 1. Возможно, забыли переключить раскладку
     const switched = splitTokens(switchKeyboardLayout(intent.keywords));
-    const byLayout = runSearch(index, switched);
+    const byLayout = searchAll(index, switched.join(" "));
 
     if (byLayout.length > 0) {
       results = byLayout;
@@ -537,7 +803,7 @@ export const searchProductsSmart = (products, query, options = EMPTY_MAP) => {
       // 2. Возможно, сильная опечатка
       const fixed = correctTokens(index, tokens);
       if (fixed) {
-        const byTypo = runSearch(index, fixed);
+        const byTypo = searchAll(index, fixed.join(" "));
         if (byTypo.length > 0) {
           results = byTypo;
           correctedQuery = fixed.join(" ");
@@ -598,6 +864,22 @@ const getPhrases = (index) => {
   return index.phrases;
 };
 
+// Модели для подсказок — в исходном виде: «DS-2CD1023G2-I»
+const getModelPhrases = (index) => {
+  if (index.modelPhrases) return index.modelPhrases;
+  const byKey = new Map();
+  index.docs.forEach((doc) => {
+    doc.models.forEach(({ key, raw, ref }) => {
+      if (ref) return;
+      const existing = byKey.get(key);
+      if (existing) existing.weight += 1;
+      else byKey.set(key, { text: raw, norm: key, weight: 1 });
+    });
+  });
+  index.modelPhrases = [...byKey.values()];
+  return index.modelPhrases;
+};
+
 export const getQuerySuggestions = (
   products,
   query,
@@ -612,6 +894,17 @@ export const getQuerySuggestions = (
     options.categoriesById || EMPTY_MAP,
     options.brandsById || EMPTY_MAP,
   );
+
+  // Запрос похож на модель → сначала подсказываем модели целиком
+  const modelResults = [];
+  const queryKey = toModelKey(String(query || "").replace(/\s+/g, ""));
+  if (queryKey) {
+    const modelMatches = getModelPhrases(index)
+      .filter((p) => p.norm !== queryKey && p.norm.startsWith(queryKey))
+      .sort((a, b) => a.norm.length - b.norm.length || b.weight - a.weight);
+    modelMatches.slice(0, limit).forEach((p) => modelResults.push(p.text));
+  }
+  if (modelResults.length >= limit) return modelResults;
 
   const matches = [];
   for (const phrase of getPhrases(index)) {
@@ -628,7 +921,10 @@ export const getQuerySuggestions = (
       a.rank - b.rank || b.weight - a.weight || a.norm.length - b.norm.length,
   );
 
-  return matches.slice(0, limit).map((m) => m.text);
+  return [
+    ...modelResults,
+    ...matches.slice(0, limit - modelResults.length).map((m) => m.text),
+  ];
 };
 
 // ─── Подсветка найденных слов ───────────────────────────────────────────────
@@ -640,10 +936,41 @@ export const getHighlightRanges = (text, query) => {
     .replace(/ё/g, "е");
   if (!source) return [];
 
-  const tokens = splitTokens(getSearchIntent(query).keywords).filter(
-    (t) => t.length >= 2,
-  );
   const ranges = [];
+  const { modelKeys, modelChunks, joinedKey, textChunks } = parseModelQuery(
+    getSearchIntent(query).keywords,
+  );
+
+  // Модели ищем без учёта дефисов и пробелов: «ds2cd1023» подсветит «DS-2CD1023»
+  let compact = null;
+  const highlightModel = (key) => {
+    if (!compact) {
+      compact = { text: "", map: [] };
+      for (let i = 0; i < source.length; i++) {
+        const ch = HOMOGLYPHS[source[i]] || source[i];
+        if (/[a-z0-9]/.test(ch)) {
+          compact.text += ch;
+          compact.map.push(i);
+        }
+      }
+    }
+    let found = false;
+    let pos = compact.text.indexOf(key);
+    while (pos !== -1) {
+      ranges.push([compact.map[pos], compact.map[pos + key.length - 1] + 1]);
+      found = true;
+      pos = compact.text.indexOf(key, pos + key.length);
+    }
+    return found;
+  };
+
+  const restChunks = [...textChunks];
+  const joinedFound = joinedKey ? highlightModel(joinedKey) : false;
+  modelKeys.forEach((key, i) => {
+    if (!highlightModel(key) && !joinedFound) restChunks.push(modelChunks[i]);
+  });
+
+  const tokens = splitTokens(restChunks.join(" ")).filter((t) => t.length >= 2);
 
   tokens.forEach((token) => {
     getVariants(token).forEach((variant) => {
