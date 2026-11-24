@@ -1,17 +1,36 @@
 "use client";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { WA_PHONE } from "../data";
 import { useCourseText } from "../i18n";
 import Watermark from "./Watermark";
 
+// Если в переводе каких-то строк ещё нет — берём эти (русские)
+const DEFAULTS = {
+  submit: "Отправить заявку",
+  sending: "Отправляем…",
+  sentTitle: "Заявка отправлена!",
+  sentText: "Спасибо! Менеджер свяжется с вами в течение рабочего дня.",
+  errSend:
+    "Не удалось отправить заявку. Попробуйте ещё раз или напишите нам в WhatsApp.",
+  errTooMany:
+    "Слишком много заявок. Попробуйте через 10 минут или напишите нам в WhatsApp.",
+  waFallback: "Написать в WhatsApp",
+  again: "Отправить ещё одну заявку",
+};
+
 export default function FaqApply() {
   const T = useCourseText();
-  const A = T.apply;
+  const { i18n } = useTranslation();
+  const A = { ...DEFAULTS, ...T.apply };
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const levelRef = useRef(null);
+  const trapRef = useRef(null);
   const [errors, setErrors] = useState({ n: "", p: "" });
-  const [waHref, setWaHref] = useState(null);
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+  const [sendError, setSendError] = useState("");
+  const [waHref, setWaHref] = useState("");
 
   const validate = () => {
     const n = nameRef.current.value.trim();
@@ -24,26 +43,56 @@ export default function FaqApply() {
     };
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    if (status === "sending") return;
     const { n, p, values } = validate();
     setErrors({ n, p });
     if (n || p) {
       (n ? nameRef : phoneRef).current.focus();
       return;
     }
-    const text =
-      `${A.wa.intro}\n` +
-      `${A.wa.name}: ${values.n}\n${A.wa.phone}: ${values.p}\n${A.wa.level}: ${A.levels[+levelRef.current.value] || A.levels[0]}`;
-    const href = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(text)}`;
-    setWaHref(href);
-    // Сразу открываем WhatsApp с готовым сообщением; если браузер заблокирует — останется кнопка ниже
-    window.open(href, "_blank", "noopener,noreferrer");
+    const level = A.levels[+levelRef.current.value] || A.levels[0];
+
+    // Запасной вариант — ссылка в WhatsApp с готовым текстом (если автоматическая отправка не сработает)
+    const text = `${A.wa.intro}\n${A.wa.name}: ${values.n}\n${A.wa.phone}: ${values.p}\n${A.wa.level}: ${level}`;
+    setWaHref(`https://wa.me/${WA_PHONE}?text=${encodeURIComponent(text)}`);
+
+    setStatus("sending");
+    setSendError("");
+    try {
+      const res = await fetch("/api/course-apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.n,
+          phone: values.p,
+          level,
+          lang: (i18n.resolvedLanguage || i18n.language || "ru").split("-")[0],
+          company: trapRef.current?.value || "", // ловушка для ботов
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        setStatus("sent");
+        return;
+      }
+      setSendError(data.error === "too_many" ? A.errTooMany : A.errSend);
+      setStatus("error");
+    } catch {
+      setSendError(A.errSend);
+      setStatus("error");
+    }
   };
 
   // Убираем ошибку, как только человек начал исправлять поле
   const clearError = (key) => () =>
     errors[key] && setErrors((prev) => ({ ...prev, [key]: "" }));
+
+  const again = () => {
+    setStatus("idle");
+    setSendError("");
+  };
 
   return (
     <section className="wm-host grey" id="faq">
@@ -67,11 +116,31 @@ export default function FaqApply() {
           </div>
 
           <aside className="apply rv" id="apply">
-            {!waHref ? (
+            {status !== "sent" ? (
               <>
                 <h3>{A.title}</h3>
                 <p>{A.text}</p>
-                <form id="f" noValidate onSubmit={onSubmit}>
+                <form
+                  id="f"
+                  noValidate
+                  onSubmit={onSubmit}
+                  aria-busy={status === "sending"}
+                >
+                  {/* Ловушка для спам-ботов: людям не видна */}
+                  <input
+                    ref={trapRef}
+                    name="company"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      width: 1,
+                      height: 1,
+                      opacity: 0,
+                    }}
+                  />
                   <label htmlFor="n">
                     {A.name}
                     <input
@@ -108,9 +177,34 @@ export default function FaqApply() {
                       ))}
                     </select>
                   </label>
-                  <button className="btn btn-brand" type="submit">
-                    {A.submit}
+                  <button
+                    className="btn btn-brand"
+                    type="submit"
+                    disabled={status === "sending"}
+                    style={
+                      status === "sending"
+                        ? { opacity: 0.75, cursor: "wait" }
+                        : undefined
+                    }
+                  >
+                    {status === "sending" ? A.sending : A.submit}
                   </button>
+                  {status === "error" && (
+                    <div role="alert" style={{ display: "grid", gap: 10 }}>
+                      <span className="err" style={{ fontSize: 14 }}>
+                        {sendError}
+                      </span>
+                      <a
+                        className="btn btn-ghost"
+                        href={waHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#fff" }}
+                      >
+                        {A.waFallback}
+                      </a>
+                    </div>
+                  )}
                   <span className="small">
                     {A.consent[0]}
                     <a href="https://baitech-new-preview.vercel.app/privacy/">
@@ -121,32 +215,20 @@ export default function FaqApply() {
                 </form>
               </>
             ) : (
-              <div className="done" id="done">
+              <div className="done" id="done" role="status">
                 <span className="done-ic" aria-hidden="true">
                   ✓
                 </span>
-                <h3>{A.doneTitle}</h3>
-                <p>{A.doneText}</p>
-                <a
-                  className="btn btn-brand"
-                  href={waHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {A.doneBtn}
-                </a>
+                <h3>{A.sentTitle}</h3>
+                <p>{A.sentText}</p>
                 <p>
                   {A.call}{" "}
-                  <a className="tel" href="tel:+996558000222">
-                    +996 558 000 222
+                  <a className="tel" href="tel:+996 505 406 805">
+                    +996 505 406 805
                   </a>
                 </p>
-                <button
-                  type="button"
-                  className="again"
-                  onClick={() => setWaHref(null)}
-                >
-                  {A.edit}
+                <button type="button" className="again" onClick={again}>
+                  {A.again}
                 </button>
               </div>
             )}
