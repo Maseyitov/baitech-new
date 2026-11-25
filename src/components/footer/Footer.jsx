@@ -140,7 +140,7 @@ function Footer() {
             )}
           </div>
 
-          <div className="footer__item">
+          <div className="footer__item footer__item--address">
             <FiMapPin />
             <span>
               {t("footer.address.street")} <br />

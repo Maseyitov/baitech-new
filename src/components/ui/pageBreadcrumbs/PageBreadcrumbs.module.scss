@@ -1,0 +1,66 @@
+@keyframes crumbsIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.breadcrumbs {
+  margin: 20px 0 18px;
+  animation: crumbsIn 0.35s ease both;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (max-width: 480px) {
+    margin: 12px 0 14px;
+    ol {
+      font-size: 12px;
+    }
+  }
+}
+
+.link,
+.plain {
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #0e2e5b;
+  text-decoration: underline;
+}
+
+.sep {
+  color: #b0b7c3;
+  margin: 0 6px;
+}
+
+.current {
+  color: #1e4ed8;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumbs {
+    animation: none;
+  }
+}

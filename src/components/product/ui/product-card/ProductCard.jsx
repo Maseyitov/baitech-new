@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { IoCartOutline, IoCart, IoClose } from "react-icons/io5";
+import { IoCartOutline, IoCart } from "react-icons/io5";
 import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
-import Link from "next/link";
 import "./ProductCard.scss";
 import { productApi } from "@/lib/products/api/useProducts";
 import { useTranslation } from "react-i18next";
@@ -47,7 +46,6 @@ const buildWhatsAppLink = (whatsapp, phone, message) => {
 const ProductCard = ({ productId }) => {
   const [activeImage, setActiveImage] = useState(null);
   const [count, setCount] = useState(1);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const { t } = useTranslation();
   const { settings } = useSiteSettings();
 
@@ -113,16 +111,6 @@ const ProductCard = ({ productId }) => {
 
   const handleCartClick = () => {
     if (!product?.id) return;
-
-    const token =
-      localStorage.getItem("access_token") ||
-      localStorage.getItem("accessToken") ||
-      localStorage.getItem("accesToken") ||
-      localStorage.getItem("acces_token");
-    if (!token) {
-      setShowAuthModal(true);
-      return;
-    }
 
     if (isInCart) {
       deleteFromCart(cartItem.id);
@@ -275,47 +263,6 @@ const ProductCard = ({ productId }) => {
           )}
         </div>
       </div>
-
-      {showAuthModal && (
-        <div
-          className="auth-modal__overlay"
-          onClick={() => setShowAuthModal(false)}
-        >
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="auth-modal__close"
-              onClick={() => setShowAuthModal(false)}
-              aria-label="Закрыть"
-            >
-              <IoClose size={20} />
-            </button>
-
-            <div className="auth-modal__icon">
-              <IoCartOutline size={48} />
-            </div>
-
-            <h3 className="auth-modal__title">{t("auth.modal.title")}</h3>
-            <p className="auth-modal__text">{t("auth.modal.description")}</p>
-
-            <div className="auth-modal__actions">
-              <Link
-                href="/register"
-                className="auth-modal__btn auth-modal__btn--primary"
-                onClick={() => setShowAuthModal(false)}
-              >
-                {t("auth.modal.register")}
-              </Link>
-              <Link
-                href="/login"
-                className="auth-modal__btn auth-modal__btn--secondary"
-                onClick={() => setShowAuthModal(false)}
-              >
-                {t("auth.modal.login")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

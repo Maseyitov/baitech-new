@@ -1,63 +1,79 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { cart } from '../api/api'
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { cart, isCartPayload, normalizeCart } from "../api/api";
 
-// Получение корзины
+const CART_KEY = ["cart"];
+
+// Бэк после изменения возвращает всю корзину — кладём её сразу в кэш
+const useApplyCartResponse = () => {
+  const queryClient = useQueryClient();
+  return (data) => {
+    if (isCartPayload(data)) {
+      queryClient.setQueryData(CART_KEY, normalizeCart(data));
+    } else {
+      queryClient.invalidateQueries({ queryKey: CART_KEY });
+    }
+  };
+};
+
+// Полная корзина: { items, items_count, total_quantity, total_price }
+export const useCartSummary = () => {
+  return useQuery({
+    queryKey: CART_KEY,
+    queryFn: cart.getCart,
+    retry: 1,
+  });
+};
+
+// Только список товаров (массив) — как было раньше, для шапки и карточек
 export const useCart = () => {
   return useQuery({
-    queryKey: ['cart'],
-    queryFn: async () => {
-      const data = await cart.getCartItems();
-      return data.results;
-    },
-  })
-}
+    queryKey: CART_KEY,
+    queryFn: cart.getCart,
+    select: (data) => data?.items ?? [],
+    retry: 1,
+  });
+};
 
 // Добавление товара
 export const useCreateCartItem = () => {
-  const queryClient = useQueryClient()
+  const applyCart = useApplyCartResponse();
 
   return useMutation({
     mutationFn: ({ product_id, quantity }) =>
       cart.createCartItem(product_id, quantity),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
-    },
-  })
-}
+    onSuccess: applyCart,
+  });
+};
 
-// Обновление количества
+// Изменение количества
 export const useUpdateCartItem = () => {
-  const queryClient = useQueryClient()
+  const applyCart = useApplyCartResponse();
 
   return useMutation({
-    mutationFn: ({ id, product_id, quantity }) =>
-      cart.updateCartItem(id, product_id, quantity),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
-    },
-  })
-}
+    mutationFn: ({ id, quantity }) => cart.updateCartItem(id, quantity),
+    onSuccess: applyCart,
+  });
+};
 
 // Удаление товара
 export const useDeleteCartItem = () => {
-  const queryClient = useQueryClient()
+  const applyCart = useApplyCartResponse();
 
   return useMutation({
     mutationFn: (id) => cart.deleteCartItem(id),
-    onSuccess: () => {  
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
-    },
-  })
-}
+    onSuccess: applyCart,
+  });
+};
 
 // Очистка корзины
 export const useClearCart = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: cart.clearCart,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
+      queryClient.setQueryData(CART_KEY, normalizeCart({ items: [] }));
+      queryClient.invalidateQueries({ queryKey: CART_KEY });
     },
-  })
-}
+  });
+};
